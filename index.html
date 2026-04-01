@@ -566,6 +566,15 @@ body{
 }
 .btn-chapter-back:hover{border-color:rgba(14,165,233,.4);color:#7DD3FC}
 .btn-chapter-back:active{transform:scale(0.98)}
+.btn-rearview{
+  width:100%;background:linear-gradient(135deg,rgba(179,153,93,.18),rgba(179,153,93,.08));
+  border:1px solid var(--border-gold);border-radius:var(--r);
+  padding:15px;color:var(--gold-lt);font-family:'Bebas Neue',sans-serif;font-size:20px;
+  letter-spacing:2.5px;cursor:pointer;
+  transition:transform .12s,border-color .15s,background .15s;
+}
+.btn-rearview:hover{border-color:var(--gold);background:linear-gradient(135deg,rgba(179,153,93,.28),rgba(179,153,93,.12))}
+.btn-rearview:active{transform:scale(0.98)}
 
 /* ── TOAST NOTIFICATION ── */
 #toast{
@@ -812,6 +821,9 @@ body{
       <button class="btn-chapter-read" id="btn-chapter-read" onclick="markChapterRead()">
         ✅ MARK AS READ · +25 XP
       </button>
+      <button class="btn-rearview" id="btn-rearview" onclick="startChapterQuiz(state._chapterId)">
+        🪞 CHECK THE REARVIEW MIRROR
+      </button>
       <button class="btn-chapter-back" onclick="closeChapter()">← BACK TO CHAPTERS</button>
     </div>
   </div>
@@ -1019,6 +1031,22 @@ const CHAPTERS = [
     desc: 'Seat belts, impaired driving laws & hazard handling',
     xp: 25
   }
+];
+
+/* ── Chapter quiz category mappings ──
+   Each entry lists the QUESTIONS cat values to draw from.
+   startChapterQuiz() filters by these, shuffles, then takes up to 10. */
+const CHAPTER_CATS = [
+  ['Signs'],                                                        // 0 — Road Signs 101
+  ['Signals'],                                                      // 1 — Traffic Signals
+  ['Speed'],                                                        // 2 — Speed Laws
+  ['Lane Travel'],                                                  // 3 — Lane Rules & Markings
+  ['Space Cushion'],                                                // 4 — Space Cushion
+  ['Turns', 'Roundabouts'],                                         // 5 — Turns & Intersections
+  ['Pedestrians','Bicycles','School Buses','Emergency Vehicles',
+   'Large Vehicles','Motorcycles'],                                 // 6 — Sharing the Road
+  ['Parking'],                                                      // 7 — Parking Rules
+  ['Safe Driving'],                                                 // 8 — Safe & Responsible Driving
 ];
 
 /* ════════════════════════════════════════
@@ -1571,6 +1599,11 @@ function closeChapter() {
   openStudyGuide();
 }
 
+function startChapterQuiz(id) {
+  state._chapterId = id;
+  startMode('rearview');
+}
+
 function markChapterRead() {
   const id = state._chapterId;
   if (id === null || id === undefined) return;
@@ -1705,6 +1738,18 @@ function startMode(mode) {
     showScreen('game');
     renderQuestion();
     startBossTimer();
+  }
+
+  // ── Rearview Mirror (chapter mini-quiz) ──
+  else if (mode === 'rearview') {
+    const cats  = CHAPTER_CATS[state._chapterId];
+    const pool  = QUESTIONS.filter(function(q) { return cats.includes(q.cat); });
+    state.queue = shuffle(pool).slice(0, 10);
+    state.numQ  = state.queue.length;
+    const chName = CHAPTERS[state._chapterId].name;
+    document.getElementById('g-mode-lbl').textContent = chName;
+    showScreen('game');
+    renderQuestion();
   }
 }
 
@@ -1978,6 +2023,10 @@ function showResults() {
   } else if (state.mode === 'weakspots') {
     // Weak Spots: 12 XP per correct (rewarded for hard drilling)
     xpEarned = (state.correct * 12) + (state.wrong * 2);
+  } else if (state.mode === 'rearview') {
+    // Rearview Mirror: 10 XP per correct, 2 per wrong, +20 bonus for 80%+
+    const rvPct = state.correct / state.numQ;
+    xpEarned = (state.correct * 10) + (state.wrong * 2) + (rvPct >= 0.8 ? 20 : 0);
   } else {
     // Classic / Boss
     xpEarned = (state.correct * XP_PER_CORRECT)
@@ -1999,7 +2048,13 @@ function showResults() {
   let emoji, headline, sub;
   const isClassicOrBoss = (state.mode === 'classic' || state.mode === 'boss');
 
-  if (state.mode === 'streak') {
+  if (state.mode === 'rearview') {
+    const chName = CHAPTERS[state._chapterId].name;
+    if (pct === 100)      { emoji = '🏆'; headline = 'PERFECT!';       sub = chName + ' — totally locked in!'; }
+    else if (pct >= 80)   { emoji = '✅'; headline = 'NAILED IT!';      sub = chName + ' knowledge is solid.'; }
+    else if (pct >= 60)   { emoji = '📖'; headline = 'ALMOST THERE!';   sub = 'Re-read the chapter and try again.'; }
+    else                  { emoji = '💪'; headline = 'KEEP STUDYING!';  sub = 'Go back and review ' + chName + '.'; }
+  } else if (state.mode === 'streak') {
     if (state.maxStreak >= 15) { emoji = '🏆'; headline = 'LEGENDARY!'; }
     else if (state.maxStreak >= 10) { emoji = '🔥'; headline = 'ON FIRE!'; }
     else if (state.maxStreak >= 5)  { emoji = '⭐'; headline = 'NICE STREAK!'; }
@@ -2065,12 +2120,23 @@ function showResults() {
   } else if (state.mode === 'weakspots') {
     extraVal.textContent = state.weakIds.length;
     extraLbl.textContent = 'Still Weak';
+  } else if (state.mode === 'rearview') {
+    extraVal.textContent = state.numQ;
+    extraLbl.textContent = 'Questions';
   } else {
     extraVal.textContent = state.maxStreak;
     extraLbl.textContent = 'Best Streak';
   }
 
   document.getElementById('r-xp').textContent = '+' + xpEarned + ' XP';
+
+  // Rearview mode: relabel the results action buttons
+  const playAgainBtn = document.getElementById('r-play-again');
+  if (state.mode === 'rearview') {
+    playAgainBtn.textContent = 'RETAKE QUIZ';
+  } else {
+    playAgainBtn.textContent = 'PLAY AGAIN';
+  }
 
   showScreen('results');
 
@@ -2083,7 +2149,12 @@ function showResults() {
    PLAY AGAIN
 ════════════════════════════════════════ */
 function playAgain() {
-  startMode(state.mode);
+  if (state.mode === 'rearview') {
+    // Retake the same chapter quiz
+    startChapterQuiz(state._chapterId);
+  } else {
+    startMode(state.mode);
+  }
 }
 
 /* ════════════════════════════════════════
