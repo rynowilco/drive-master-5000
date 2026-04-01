@@ -25,9 +25,8 @@
   --correct:#22C55E; --correct-bg:rgba(34,197,94,.12);
   --wrong:#EF4444;   --wrong-bg:rgba(239,68,68,.10);
   --r:12px; --rsm:8px;
+  --teal:#0EA5E9; --teal-lt:#7DD3FC; --teal-glow:rgba(14,165,233,.25);
 }
-
-/* ── RESET ── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{-webkit-tap-highlight-color:transparent}
 body{
@@ -430,16 +429,79 @@ body{
 /* ══════════════════════════════════════════
    STUDY SCREEN (v2 — The On-Ramp)
 ══════════════════════════════════════════ */
-#study{background:var(--bg2)}
+#study{
+  background:
+    radial-gradient(ellipse 110% 45% at 50% -5%,rgba(14,165,233,.18) 0%,transparent 60%),
+    var(--bg2);
+}
+
+/* Top bar */
 .study-topbar{
   padding:14px 16px 12px;display:flex;align-items:center;gap:12px;
   border-bottom:1px solid var(--border);background:var(--surf);flex-shrink:0;
 }
 .study-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:#7DD3FC;flex:1}
-.study-body{flex:1;padding:32px 20px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
-.study-placeholder-icon{font-size:64px;margin-bottom:16px}
-.study-placeholder-title{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:2px;color:#7DD3FC;margin-bottom:10px}
-.study-placeholder-text{font-size:14px;color:var(--dim);line-height:1.65;max-width:280px}
+
+/* Hero / intro strip */
+.study-hero{
+  padding:20px 20px 16px;
+  border-bottom:1px solid var(--border);
+  background:linear-gradient(180deg,rgba(14,165,233,.07) 0%,transparent 100%);
+  flex-shrink:0;
+}
+.study-hero-label{
+  font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:3px;
+  color:#7DD3FC;margin-bottom:5px;
+}
+.study-hero-title{
+  font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:2px;
+  color:var(--text);line-height:1;margin-bottom:8px;
+}
+.study-hero-sub{font-size:12.5px;color:var(--dim);line-height:1.5;margin-bottom:14px}
+
+/* Chapter progress bar */
+.study-prog-row{display:flex;justify-content:space-between;font-size:10px;font-weight:700;
+  text-transform:uppercase;letter-spacing:1.5px;color:var(--dim);margin-bottom:6px}
+.study-prog-row span:first-child{color:#7DD3FC}
+.study-prog-track{height:6px;background:var(--surf2);border-radius:100px;overflow:hidden}
+.study-prog-fill{
+  height:100%;border-radius:100px;
+  background:linear-gradient(90deg,#0EA5E9,#7DD3FC);
+  transition:width .8s cubic-bezier(.34,1.56,.64,1);
+}
+
+/* Section label */
+.study-sec-hd{display:flex;align-items:center;gap:10px;padding:18px 20px 10px}
+.study-sec-hd-txt{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:4px;color:var(--dim)}
+.study-sec-hd-line{flex:1;height:1px;background:var(--border)}
+
+/* Chapter list */
+.chapter-list{padding:0 20px 36px;display:flex;flex-direction:column;gap:8px;overflow-y:auto}
+
+/* Chapter card */
+.chapter-card{
+  background:var(--surf);border:1px solid var(--border);border-radius:var(--r);
+  padding:14px 14px 14px 0;display:flex;align-items:center;gap:4px;
+  cursor:pointer;position:relative;overflow:hidden;
+  transition:border-color .15s,transform .12s,box-shadow .15s;
+  -webkit-tap-highlight-color:transparent;
+}
+.chapter-card:hover{border-color:var(--border-lt);box-shadow:0 4px 24px rgba(0,0,0,.4)}
+.chapter-card:active{transform:scale(0.975)}
+.chapter-card.ch-done{border-color:rgba(14,165,233,.3);background:rgba(14,165,233,.04)}
+
+.ch-accent{width:4px;align-self:stretch;border-radius:0 3px 3px 0;flex-shrink:0;margin-right:10px;background:#0EA5E9}
+.chapter-card.ch-done .ch-accent{background:#22C55E}
+
+.ch-icon{font-size:26px;min-width:42px;text-align:center;flex-shrink:0}
+.ch-copy{flex:1;min-width:0}
+.ch-num{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:#7DD3FC;margin-bottom:2px}
+.chapter-card.ch-done .ch-num{color:var(--correct)}
+.ch-name{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1.5px;line-height:1;color:var(--text)}
+.ch-desc{font-size:11.5px;color:var(--dim);margin-top:3px;line-height:1.4;font-weight:500}
+
+.ch-status{flex-shrink:0;padding-right:4px;font-size:20px;color:var(--faint)}
+.chapter-card.ch-done .ch-status{color:var(--correct)}
 
 /* ── TOAST NOTIFICATION ── */
 #toast{
@@ -644,12 +706,29 @@ body{
   <div class="study-topbar">
     <button class="btn-back" onclick="goHome()">‹</button>
     <div class="study-title">THE ON-RAMP</div>
+    <div class="game-counter" id="study-progress-lbl">0 / 9</div>
   </div>
-  <div class="study-body">
-    <div class="study-placeholder-icon">📖</div>
-    <div class="study-placeholder-title">CHAPTERS LOADING</div>
-    <div class="study-placeholder-text">Step 1 scaffold confirmed — chapter content coming in Step 3!</div>
+
+  <div class="study-hero">
+    <div class="study-hero-label">Your Driving Test Study Guide</div>
+    <div class="study-hero-title">Learn It Before You Quiz It</div>
+    <div class="study-hero-sub">9 chapters · Read each one to earn 25 XP · Tap any chapter to start</div>
+    <div class="study-prog-row">
+      <span id="study-prog-txt">0 of 9 chapters read</span>
+      <span id="study-prog-pct">0%</span>
+    </div>
+    <div class="study-prog-track">
+      <div class="study-prog-fill" id="study-prog-fill" style="width:0%"></div>
+    </div>
   </div>
+
+  <div class="study-sec-hd">
+    <span class="study-sec-hd-txt">Chapters</span>
+    <div class="study-sec-hd-line"></div>
+  </div>
+
+  <!-- Chapter cards — built dynamically by renderStudySelect() -->
+  <div class="chapter-list" id="chapter-list"></div>
 </div>
 
 <!-- ═══════════════════════════════════════
@@ -788,6 +867,73 @@ const SIGNS = {
   school:`<svg width="88" height="90" viewBox="0 0 88 90"><polygon points="44,5 83,30 83,75 5,75 5,30" fill="#FFCC00" stroke="black" stroke-width="2"/><text x="44" y="42" text-anchor="middle" fill="black" font-family="Arial,sans-serif" font-size="9" font-weight="bold">SCHOOL</text><text x="44" y="56" text-anchor="middle" fill="black" font-family="Arial,sans-serif" font-size="8">CROSSING</text></svg>`,
   railroad:`<svg width="88" height="88" viewBox="0 0 88 88"><polygon points="44,8 80,72 8,72" fill="#FFCC00" stroke="black" stroke-width="2.5"/><line x1="30" y1="28" x2="58" y2="66" stroke="black" stroke-width="4"/><line x1="58" y1="28" x2="30" y2="66" stroke="black" stroke-width="4"/><text x="44" y="62" text-anchor="middle" fill="black" font-family="Arial Black,sans-serif" font-size="11" font-weight="900">RR</text></svg>`
 };
+
+/* ── Chapter Data (The On-Ramp) ── */
+const CHAPTERS = [
+  {
+    id: 0,
+    icon: '🚦',
+    name: 'Road Signs 101',
+    desc: 'Shapes, colors & what every sign type means',
+    xp: 25
+  },
+  {
+    id: 1,
+    icon: '🚥',
+    name: 'Traffic Signals',
+    desc: 'Steady, flashing, arrows & dark signals',
+    xp: 25
+  },
+  {
+    id: 2,
+    icon: '💨',
+    name: 'Speed Laws',
+    desc: 'Default limits by zone, the Basic Rule & more',
+    xp: 25
+  },
+  {
+    id: 3,
+    icon: '🛣️',
+    name: 'Lane Rules & Markings',
+    desc: 'Yellow vs white lines, passing zones & bike lanes',
+    xp: 25
+  },
+  {
+    id: 4,
+    icon: '📏',
+    name: 'Space Cushion',
+    desc: 'Following distance, the 2–4 second rule & stopping',
+    xp: 25
+  },
+  {
+    id: 5,
+    icon: '↩️',
+    name: 'Turns & Intersections',
+    desc: 'Right-of-way, turn signals & how roundabouts work',
+    xp: 25
+  },
+  {
+    id: 6,
+    icon: '🤝',
+    name: 'Sharing the Road',
+    desc: 'Pedestrians, cyclists, buses, trucks & motorcycles',
+    xp: 25
+  },
+  {
+    id: 7,
+    icon: '🅿️',
+    name: 'Parking Rules',
+    desc: 'Parallel parking, hill parking & no-park zones',
+    xp: 25
+  },
+  {
+    id: 8,
+    icon: '🛡️',
+    name: 'Safe & Responsible Driving',
+    desc: 'Seat belts, impaired driving laws & hazard handling',
+    xp: 25
+  }
+];
 </script>
 
 <!-- ═══════════════════════════════════════
@@ -1053,7 +1199,46 @@ function goHome() {
    THE ON-RAMP — STUDY GUIDE NAVIGATION
 ════════════════════════════════════════ */
 function openStudyGuide() {
+  renderStudySelect();
   showScreen('study');
+}
+
+function renderStudySelect() {
+  const done  = state.chaptersRead.length;
+  const total = CHAPTERS.length;
+  const pct   = Math.round((done / total) * 100);
+
+  // Update hero progress
+  document.getElementById('study-progress-lbl').textContent = done + ' / ' + total;
+  document.getElementById('study-prog-txt').textContent     = done + ' of ' + total + ' chapters read';
+  document.getElementById('study-prog-pct').textContent     = pct + '%';
+  document.getElementById('study-prog-fill').style.width    = pct + '%';
+
+  // Build chapter cards
+  const list = document.getElementById('chapter-list');
+  list.innerHTML = '';
+
+  CHAPTERS.forEach(ch => {
+    const isRead = state.chaptersRead.includes(ch.id);
+    const card   = document.createElement('div');
+    card.className = 'chapter-card' + (isRead ? ' ch-done' : '');
+    card.setAttribute('onclick', 'openChapter(' + ch.id + ')');
+    card.innerHTML =
+      '<div class="ch-accent"></div>' +
+      '<div class="ch-icon">' + ch.icon + '</div>' +
+      '<div class="ch-copy">' +
+        '<div class="ch-num">Chapter ' + (ch.id + 1) + (isRead ? ' · ✅ Read' : ' · +' + ch.xp + ' XP') + '</div>' +
+        '<div class="ch-name">' + ch.name + '</div>' +
+        '<div class="ch-desc">' + ch.desc + '</div>' +
+      '</div>' +
+      '<div class="ch-status">' + (isRead ? '✅' : '›') + '</div>';
+    list.appendChild(card);
+  });
+}
+
+// Placeholder — will be replaced in Step 3 with full chapter content
+function openChapter(id) {
+  showToast('📖 Chapter content coming in Step 3!');
 }
 
 /* ════════════════════════════════════════
