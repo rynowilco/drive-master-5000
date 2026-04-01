@@ -1,0 +1,1531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="description" content="Drive Master 5000 — Oregon DMV permit test prep for Tyler. 100 questions, 5 game modes, XP and levels.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Drive Master 5000">
+<meta name="theme-color" content="#080808">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏆</text></svg>">
+<title>Drive Master 5000 — Oregon Permit Prep</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700;900&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ── TOKENS ── */
+:root {
+  --red:#C8102E; --red-dk:#AA0000; --red-glow:rgba(200,16,46,.32);
+  --gold:#B3995D; --gold-lt:#D4B97A; --gold-bright:#F0D090; --gold-dk:#8A7240; --gold-glow:rgba(179,153,93,.28);
+  --bg:#080808; --bg2:#0E0E10;
+  --surf:#141418; --surf2:#1C1C22; --surf3:#242430;
+  --border:#2A2A36; --border-lt:#3A3A4A; --border-gold:#4A4030;
+  --text:#F0F0F2; --dim:#888899; --faint:#444458;
+  --correct:#22C55E; --correct-bg:rgba(34,197,94,.12);
+  --wrong:#EF4444;   --wrong-bg:rgba(239,68,68,.10);
+  --r:12px; --rsm:8px;
+}
+
+/* ── RESET ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-tap-highlight-color:transparent}
+body{
+  font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);
+  min-height:100dvh;overflow-x:hidden;-webkit-font-smoothing:antialiased;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+}
+
+/* ── SCREENS ── */
+.screen{display:none;min-height:100dvh;flex-direction:column;animation:screenIn .25s ease both}
+.screen.active{display:flex}
+@keyframes screenIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ══════════════════════════════════════════
+   HOME SCREEN
+══════════════════════════════════════════ */
+#home{
+  background:
+    radial-gradient(ellipse 110% 55% at 50% -8%,rgba(200,16,46,.32) 0%,transparent 62%),
+    radial-gradient(ellipse 60% 30% at 90% 100%,rgba(179,153,93,.1) 0%,transparent 55%),
+    repeating-linear-gradient(135deg,transparent 0,transparent 34px,rgba(255,255,255,.013) 34px,rgba(255,255,255,.013) 35px),
+    var(--bg);
+}
+.home-hdr{padding:20px 20px 0;display:flex;justify-content:space-between;align-items:flex-start}
+.logo-main{
+  font-family:'Bebas Neue',sans-serif;font-size:52px;letter-spacing:4px;display:block;line-height:.85;
+  background:linear-gradient(155deg,#fff 0%,var(--gold-lt) 45%,var(--gold) 75%,var(--gold-dk) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  filter:drop-shadow(0 0 18px rgba(179,153,93,.25));
+}
+.logo-tag{
+  display:inline-block;background:var(--red);color:#fff;font-size:9px;font-weight:800;
+  letter-spacing:3px;text-transform:uppercase;padding:3px 8px;border-radius:100px;margin-top:6px;
+}
+.player-card{
+  background:var(--surf);border:1px solid var(--border-gold);border-radius:var(--r);
+  padding:10px 14px;text-align:right;min-width:110px;
+}
+.player-level{font-family:'Bebas Neue',sans-serif;font-size:34px;color:var(--gold-lt);line-height:1;letter-spacing:2px}
+.player-rank{font-size:9.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);margin-top:1px;line-height:1.3}
+
+/* XP */
+.xp-section{padding:16px 20px 0}
+.xp-row{display:flex;justify-content:space-between;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--dim);margin-bottom:7px}
+.xp-row span:first-child{color:var(--gold)}
+.xp-track{height:8px;background:var(--surf2);border-radius:100px;overflow:hidden;position:relative}
+.xp-fill{height:100%;border-radius:100px;background:linear-gradient(90deg,var(--red) 0%,var(--gold) 100%);transition:width 1s cubic-bezier(.34,1.56,.64,1);position:relative}
+.xp-fill::after{content:'';position:absolute;top:0;bottom:0;left:-60px;width:60px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);animation:shimmer 2.5s infinite}
+@keyframes shimmer{0%{transform:translateX(0)}100%{transform:translateX(300px)}}
+
+/* Stats */
+.stat-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:14px 20px 0}
+.stat-tile{background:var(--surf);border:1px solid var(--border);border-radius:var(--rsm);padding:12px 8px 10px;text-align:center}
+.stat-val{font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--gold-lt);display:block;line-height:1;letter-spacing:1px}
+.stat-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--dim);display:block;margin-top:3px}
+
+/* Section label */
+.sec-hd{display:flex;align-items:center;gap:10px;padding:20px 20px 10px}
+.sec-hd-txt{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:4px;color:var(--dim)}
+.sec-hd-line{flex:1;height:1px;background:var(--border)}
+
+/* Mode cards */
+.mode-list{padding:0 20px 36px;display:flex;flex-direction:column;gap:8px}
+.mode-card{
+  background:var(--surf);border:1px solid var(--border);border-radius:var(--r);
+  padding:14px 14px 14px 0;display:flex;align-items:center;gap:4px;
+  cursor:pointer;position:relative;overflow:hidden;
+  transition:border-color .15s,transform .12s,box-shadow .15s;
+  -webkit-tap-highlight-color:transparent;
+}
+.mode-card:hover{border-color:var(--border-lt);box-shadow:0 4px 24px rgba(0,0,0,.4)}
+.mode-card:active{transform:scale(0.975)}
+.mode-accent{width:4px;align-self:stretch;border-radius:0 3px 3px 0;flex-shrink:0;margin-right:10px}
+.mode-icon{font-size:28px;min-width:42px;text-align:center;flex-shrink:0}
+.mode-copy{flex:1;min-width:0}
+.mode-name{font-family:'Bebas Neue',sans-serif;font-size:25px;letter-spacing:1.5px;line-height:1}
+.mode-desc{font-size:12px;color:var(--dim);margin-top:3px;line-height:1.45;font-weight:500}
+.mode-badge{font-size:9.5px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;padding:2px 7px;border-radius:100px;margin-top:5px;display:inline-block}
+.mode-arr{color:var(--faint);font-size:24px;padding-right:2px;flex-shrink:0}
+
+.t-red .mode-accent{background:var(--red)}
+.t-red .mode-badge{background:rgba(200,16,46,.2);color:#ff6b7a}
+.t-gold .mode-accent{background:var(--gold)}
+.t-gold .mode-badge{background:rgba(179,153,93,.2);color:var(--gold-lt)}
+.t-green .mode-accent{background:var(--correct)}
+.t-green .mode-badge{background:rgba(34,197,94,.15);color:#86EFAC}
+.t-blue .mode-accent{background:#3B82F6}
+.t-blue .mode-badge{background:rgba(59,130,246,.15);color:#93C5FD}
+.t-purple .mode-accent{background:#A855F7}
+.t-purple .mode-badge{background:rgba(168,85,247,.15);color:#D8B4FE}
+
+/* ══════════════════════════════════════════
+   GAME SCREEN
+══════════════════════════════════════════ */
+#game{background:var(--bg2)}
+.game-topbar{
+  padding:14px 16px 12px;display:flex;align-items:center;gap:12px;
+  border-bottom:1px solid var(--border);background:var(--surf);flex-shrink:0;
+}
+.btn-back{
+  background:var(--surf2);border:1px solid var(--border);color:var(--text);
+  width:38px;height:38px;border-radius:var(--rsm);display:flex;align-items:center;
+  justify-content:center;cursor:pointer;font-size:22px;flex-shrink:0;line-height:1;
+  transition:background .12s;
+}
+.btn-back:active{background:var(--surf3)}
+.game-mode-name{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--gold-lt);flex:1}
+.game-counter{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;color:var(--dim);letter-spacing:.5px}
+
+.game-prog-wrap{height:4px;background:var(--surf2);flex-shrink:0}
+.game-prog-fill{height:100%;background:linear-gradient(90deg,var(--red),var(--gold));transition:width .4s ease}
+
+/* Score chips */
+.hud-score{display:flex;gap:6px;padding:10px 16px 0;flex-shrink:0}
+.score-chip{flex:1;background:var(--surf);border-radius:var(--rsm);padding:7px 6px;text-align:center;border:1px solid var(--border)}
+.chip-val{font-family:'Bebas Neue',sans-serif;font-size:22px;line-height:1}
+.chip-lbl{font-size:8.5px;text-transform:uppercase;letter-spacing:1.5px;color:var(--dim);font-weight:700;margin-top:1px;display:block}
+.chip-c .chip-val{color:var(--correct)}
+.chip-w .chip-val{color:var(--wrong)}
+.chip-r .chip-val{color:var(--gold-lt)}
+
+/* Question area */
+.question-area{flex:1;padding:14px 16px 0;display:flex;flex-direction:column;overflow-y:auto}
+.sign-display{display:flex;justify-content:center;align-items:center;padding:4px 0 14px;min-height:100px}
+.q-pill{
+  display:inline-flex;align-items:center;gap:6px;background:var(--surf2);border:1px solid var(--border);
+  border-radius:100px;padding:3px 10px 3px 8px;font-size:10px;font-weight:700;
+  text-transform:uppercase;letter-spacing:2px;color:var(--dim);margin-bottom:10px;width:fit-content;
+}
+.q-dot{width:6px;height:6px;border-radius:50%;background:var(--red)}
+.q-text{font-size:17px;font-weight:600;line-height:1.6;color:var(--text);margin-bottom:18px;flex-shrink:0}
+
+.answers-list{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.ans-btn{
+  background:var(--surf);border:2px solid var(--border);border-radius:var(--r);
+  padding:13px 14px;color:var(--text);font-family:'Barlow',sans-serif;font-size:14.5px;
+  font-weight:500;text-align:left;cursor:pointer;display:flex;align-items:center;
+  gap:12px;transition:border-color .12s,background .12s,transform .1s;
+  line-height:1.45;width:100%;-webkit-tap-highlight-color:transparent;
+}
+.ans-btn:hover{border-color:var(--border-lt)}
+.ans-btn:active:not([disabled]){transform:scale(0.985)}
+.ans-btn[disabled]{cursor:default}
+.ans-ltr{
+  min-width:30px;height:30px;border-radius:var(--rsm);background:var(--surf2);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;
+  font-size:18px;color:var(--dim);flex-shrink:0;transition:background .12s,border-color .12s,color .12s;
+}
+.ans-btn.s-correct{border-color:var(--correct);background:var(--correct-bg)}
+.ans-btn.s-correct .ans-ltr{background:var(--correct);border-color:var(--correct);color:#fff}
+.ans-btn.s-wrong{border-color:var(--wrong);background:var(--wrong-bg)}
+.ans-btn.s-wrong .ans-ltr{background:var(--wrong);border-color:var(--wrong);color:#fff}
+.ans-btn.s-reveal{border-color:var(--correct);background:rgba(34,197,94,.06)}
+.ans-btn.s-reveal .ans-ltr{background:var(--correct);border-color:var(--correct);color:#fff}
+
+/* Feedback */
+.feedback{border-radius:var(--r);padding:12px 14px;font-size:13.5px;line-height:1.6;margin-bottom:12px;display:none;animation:slideUp .2s ease both;flex-shrink:0}
+.feedback.show{display:block}
+.feedback.fb-ok{background:var(--correct-bg);border:1px solid rgba(34,197,94,.3);color:#86EFAC}
+.feedback.fb-no{background:var(--wrong-bg);border:1px solid rgba(239,68,68,.25);color:#FCA5A5}
+.fb-title{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;letter-spacing:.5px;margin-bottom:4px}
+.fb-ref{font-size:11px;opacity:.7;margin-top:5px;font-style:italic}
+
+/* Next button */
+.btn-next{
+  width:100%;background:linear-gradient(135deg,var(--red) 0%,var(--red-dk) 100%);border:none;
+  border-radius:var(--r);padding:16px;color:#fff;font-family:'Bebas Neue',sans-serif;
+  font-size:23px;letter-spacing:3px;cursor:pointer;display:none;
+  transition:transform .12s,box-shadow .12s;box-shadow:0 4px 20px rgba(200,16,46,.3);
+  margin-bottom:20px;flex-shrink:0;position:relative;overflow:hidden;
+}
+.btn-next::before{
+  content:'';position:absolute;top:0;left:-75%;width:50%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.15),transparent);
+  transform:skewX(-20deg);animation:btnShine 3s 1s infinite;
+}
+@keyframes btnShine{0%{left:-75%}40%,100%{left:125%}}
+.btn-next.show{display:block}
+.btn-next:active{transform:scale(0.98)}
+
+/* ══════════════════════════════════════════
+   RESULTS SCREEN
+══════════════════════════════════════════ */
+#results{
+  background:
+    radial-gradient(ellipse 100% 50% at 50% -5%,rgba(200,16,46,.28) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 25% at 10% 100%,rgba(179,153,93,.12) 0%,transparent 55%),
+    var(--bg);
+}
+.results-scroll{flex:1;padding:28px 20px 40px;display:flex;flex-direction:column;align-items:center;overflow-y:auto}
+
+.r-badge{
+  width:116px;height:116px;border-radius:50%;background:var(--surf);
+  border:3px solid var(--gold);box-shadow:0 0 32px rgba(179,153,93,.25),0 0 0 8px rgba(179,153,93,.06);
+  display:flex;align-items:center;justify-content:center;margin-bottom:20px;
+  animation:badgePop .6s cubic-bezier(.34,1.56,.64,1) both;position:relative;
+}
+.r-badge::before{
+  content:'';position:absolute;inset:-6px;border-radius:50%;
+  border:1px dashed rgba(179,153,93,.3);animation:rotateSlow 20s linear infinite;
+}
+@keyframes rotateSlow{to{transform:rotate(360deg)}}
+.badge-emoji{font-size:46px;line-height:1}
+@keyframes badgePop{from{transform:scale(0) rotate(-15deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+
+.r-headline{font-family:'Bebas Neue',sans-serif;font-size:48px;letter-spacing:3px;text-align:center;line-height:1;margin-bottom:6px;animation:slideUp .4s .15s ease both}
+.r-sub{font-size:13.5px;color:var(--dim);text-align:center;margin-bottom:20px;font-weight:500;animation:slideUp .4s .2s ease both}
+.r-score-frac{font-family:'Bebas Neue',sans-serif;font-size:78px;letter-spacing:-2px;color:var(--gold-lt);line-height:1;text-align:center;filter:drop-shadow(0 0 20px rgba(179,153,93,.3));animation:slideUp .4s .25s ease both}
+.r-score-lbl{font-size:12px;text-transform:uppercase;letter-spacing:2.5px;color:var(--dim);font-weight:700;text-align:center;margin-bottom:18px}
+
+.r-banner{width:100%;border-radius:var(--r);padding:13px 16px;text-align:center;margin-bottom:18px;animation:slideUp .4s .3s ease both}
+.r-banner.pass{background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.35)}
+.r-banner.fail{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3)}
+.r-banner-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px}
+.r-banner.pass .r-banner-title{color:#86EFAC}
+.r-banner.fail .r-banner-title{color:#FCA5A5}
+.r-banner-body{font-size:12.5px;opacity:.8;margin-top:3px;line-height:1.4}
+.r-banner.pass .r-banner-body{color:#BBF7D0}
+.r-banner.fail .r-banner-body{color:#FECACA}
+
+.r-stats{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;animation:slideUp .4s .35s ease both}
+.r-stat{background:var(--surf);border:1px solid var(--border);border-radius:var(--r);padding:14px 12px;text-align:center}
+.r-stat-val{font-family:'Bebas Neue',sans-serif;font-size:32px;line-height:1;letter-spacing:1px}
+.r-stat-lbl{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--dim);font-weight:700;margin-top:3px}
+.rs-c .r-stat-val{color:var(--correct)}
+.rs-w .r-stat-val{color:var(--wrong)}
+.rs-p .r-stat-val{color:var(--gold-lt)}
+.rs-e .r-stat-val{color:#A78BFA}
+
+.r-xp{
+  width:100%;border-radius:var(--r);padding:16px;text-align:center;margin-bottom:20px;
+  background:linear-gradient(135deg,rgba(200,16,46,.15),rgba(179,153,93,.15));
+  border:1px solid var(--border-gold);animation:slideUp .4s .4s ease both;
+}
+.r-xp-num{font-family:'Bebas Neue',sans-serif;font-size:46px;color:var(--gold-bright);line-height:1;letter-spacing:2px;filter:drop-shadow(0 0 12px rgba(179,153,93,.4))}
+.r-xp-lbl{font-size:10px;text-transform:uppercase;letter-spacing:2.5px;color:var(--dim);font-weight:700;margin-top:3px}
+
+.r-actions{width:100%;display:flex;flex-direction:column;gap:9px;animation:slideUp .4s .45s ease both}
+.btn-primary{
+  width:100%;background:linear-gradient(135deg,var(--red) 0%,var(--red-dk) 100%);border:none;
+  border-radius:var(--r);padding:16px;color:#fff;font-family:'Bebas Neue',sans-serif;
+  font-size:22px;letter-spacing:3px;cursor:pointer;transition:transform .12s,box-shadow .12s;
+  box-shadow:0 4px 20px rgba(200,16,46,.3);
+}
+.btn-primary:active{transform:scale(0.98)}
+.btn-secondary{
+  width:100%;background:var(--surf);border:1px solid var(--border-lt);border-radius:var(--r);
+  padding:14px;color:var(--dim);font-family:'Bebas Neue',sans-serif;font-size:19px;
+  letter-spacing:2.5px;cursor:pointer;transition:transform .12s,border-color .12s,color .12s;
+}
+.btn-secondary:hover{border-color:var(--border-gold);color:var(--gold)}
+.btn-secondary:active{transform:scale(0.98)}
+
+/* ── SHARED ANIMATIONS ── */
+@keyframes slideUp{from{transform:translateY(16px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.hide{display:none!important}
+
+/* ── LEVEL-UP OVERLAY ── */
+#levelup-overlay{
+  position:fixed;inset:0;z-index:999;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:radial-gradient(ellipse 80% 60% at 50% 40%,rgba(200,16,46,.55) 0%,rgba(8,8,8,.96) 70%);
+  animation:fadeIn .35s ease both;
+  padding:32px;text-align:center;
+}
+#levelup-overlay.hide{display:none!important}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.lv-burst{font-size:72px;animation:burst .6s cubic-bezier(.34,1.56,.64,1) both}
+@keyframes burst{from{transform:scale(0) rotate(-20deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+.lv-label{
+  font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:5px;
+  color:var(--gold);text-transform:uppercase;margin-top:16px;
+  animation:slideUp .4s .2s ease both;
+}
+.lv-num{
+  font-family:'Bebas Neue',sans-serif;font-size:88px;letter-spacing:-2px;
+  background:linear-gradient(155deg,#fff 0%,var(--gold-lt) 45%,var(--gold) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  line-height:1;animation:slideUp .4s .3s ease both;
+  filter:drop-shadow(0 0 28px rgba(179,153,93,.5));
+}
+.lv-rank{
+  font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;
+  color:var(--text);margin-top:4px;animation:slideUp .4s .4s ease both;
+}
+.lv-xp-row{
+  font-size:13px;color:var(--dim);margin-top:8px;font-weight:600;
+  animation:slideUp .4s .45s ease both;
+}
+.lv-btn{
+  margin-top:28px;background:linear-gradient(135deg,var(--red),var(--red-dk));
+  border:none;border-radius:var(--r);padding:15px 40px;color:#fff;
+  font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:3px;
+  cursor:pointer;animation:slideUp .4s .5s ease both;
+  box-shadow:0 4px 20px rgba(200,16,46,.4);
+}
+.lv-btn:active{transform:scale(0.97)}
+
+/* Confetti dots (pure CSS) */
+.confetti-wrap{position:fixed;inset:0;pointer-events:none;z-index:998;overflow:hidden}
+.confetti-wrap.hide{display:none}
+.cdot{
+  position:absolute;top:-10px;width:8px;height:8px;border-radius:2px;
+  animation:fall linear forwards;
+}
+@keyframes fall{
+  0%  {transform:translateY(0) rotate(0deg);opacity:1}
+  100%{transform:translateY(110vh) rotate(720deg);opacity:0}
+}
+
+/* ── STUDY GUIDE CARD (v2 placeholder) ── */
+.mode-card.locked{opacity:.55;cursor:default}
+.mode-card.locked:active{transform:none}
+.coming-pill{
+  font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;
+  padding:2px 8px;border-radius:100px;background:rgba(255,255,255,.08);
+  color:var(--dim);display:inline-block;margin-top:5px;border:1px solid var(--border);
+}
+
+/* ── TIMER HUD (Sign Blitz) ── */
+.hud-timer{padding:10px 16px 2px;flex-shrink:0;display:none}
+.hud-timer.visible{display:block}
+.timer-track{height:7px;background:var(--surf2);border-radius:100px;overflow:hidden}
+.timer-fill{height:100%;border-radius:100px;background:linear-gradient(90deg,var(--correct),var(--gold-lt));transition:width .1s linear,background .4s}
+.timer-fill.urgent{background:linear-gradient(90deg,var(--wrong),var(--red))}
+.timer-label-row{display:flex;justify-content:space-between;font-size:10px;font-weight:700;color:var(--dim);margin-top:4px;text-transform:uppercase;letter-spacing:1.5px}
+.timer-label-row span:first-child{color:var(--gold)}
+
+/* ── BOSS CLOCK HUD ── */
+.hud-boss{padding:10px 16px 0;text-align:center;flex-shrink:0;display:none}
+.hud-boss.visible{display:block}
+.boss-clock{font-family:'Bebas Neue',sans-serif;font-size:42px;letter-spacing:5px;color:var(--gold-lt);line-height:1}
+.boss-clock.urgent{color:var(--wrong);animation:pulse .6s infinite}
+.boss-clock-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:2.5px;color:var(--dim);margin-top:1px}
+
+/* ── STREAK HUD ── */
+.hud-streak{padding:8px 16px 0;text-align:center;flex-shrink:0;display:none}
+.hud-streak.visible{display:block}
+.streak-big{font-family:'Bebas Neue',sans-serif;font-size:52px;color:var(--gold-lt);line-height:1;letter-spacing:2px}
+.streak-big.on-fire{color:var(--red);filter:drop-shadow(0 0 10px rgba(200,16,46,.6))}
+.streak-best-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--dim);margin-top:1px}
+
+/* ── WEAK SPOTS EMPTY STATE ── */
+.empty-state{flex:1;display:none;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;text-align:center}
+.empty-state.visible{display:flex}
+.empty-icon{font-size:58px;margin-bottom:16px}
+.empty-title{font-family:'Bebas Neue',sans-serif;font-size:34px;letter-spacing:2px;margin-bottom:10px}
+.empty-body{font-size:14px;color:var(--dim);line-height:1.65;max-width:280px}
+.empty-cta{
+  margin-top:24px;background:linear-gradient(135deg,var(--red),var(--red-dk));
+  border:none;border-radius:var(--r);padding:14px 32px;color:#fff;
+  font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2.5px;cursor:pointer;
+}
+
+/* ── SIGN BLITZ SPEED BONUS FLASH ── */
+.speed-bonus{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);
+  font-family:'Bebas Neue',sans-serif;font-size:52px;letter-spacing:3px;
+  color:var(--gold-bright);text-shadow:0 0 20px rgba(179,153,93,.8);
+  pointer-events:none;z-index:500;white-space:nowrap;
+  animation:none;
+}
+.speed-bonus.pop{animation:bonusPop .7s ease forwards}
+@keyframes bonusPop{
+  0%  {transform:translate(-50%,-50%) scale(0);opacity:1}
+  40% {transform:translate(-50%,-60%) scale(1.1);opacity:1}
+  100%{transform:translate(-50%,-80%) scale(0.8);opacity:0}
+}
+
+/* ── INSTALL TIP BANNER ── */
+.install-tip{
+  margin:0 20px 28px;padding:12px 14px;
+  background:linear-gradient(135deg,rgba(179,153,93,.12),rgba(200,16,46,.08));
+  border:1px solid var(--border-gold);border-radius:var(--r);
+  display:flex;align-items:flex-start;gap:10px;
+}
+.install-tip.hidden{display:none}
+.install-tip-icon{font-size:20px;flex-shrink:0;margin-top:1px}
+.install-tip-text{font-size:12px;color:var(--dim);line-height:1.55;flex:1}
+.install-tip-text strong{color:var(--gold-lt)}
+.install-tip-close{
+  background:none;border:none;color:var(--faint);font-size:16px;
+  cursor:pointer;padding:0;flex-shrink:0;line-height:1;margin-top:1px;
+}
+.install-tip-close:hover{color:var(--dim)}
+
+/* ── RESET BUTTON ── */
+.reset-row{padding:0 20px 12px;text-align:center}
+.btn-reset{
+  background:none;border:1px solid var(--border);border-radius:100px;
+  padding:6px 18px;font-size:11px;font-weight:700;letter-spacing:2px;
+  text-transform:uppercase;color:var(--faint);cursor:pointer;
+  transition:border-color .15s,color .15s;
+}
+.btn-reset:hover{border-color:var(--wrong);color:var(--wrong)}
+
+/* ── TOAST NOTIFICATION ── */
+#toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);
+  background:var(--surf2);border:1px solid var(--border-lt);border-radius:100px;
+  padding:10px 20px;font-size:13px;font-weight:600;color:var(--text);
+  white-space:nowrap;z-index:990;transition:transform .3s cubic-bezier(.34,1.56,.64,1),opacity .3s;
+  opacity:0;pointer-events:none;
+}
+#toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════
+     HOME
+═══════════════════════════════════════ -->
+<div id="home" class="screen active">
+  <div class="home-hdr">
+    <div>
+      <span class="logo-main">DRIVE<br>MASTER<br>5000</span>
+      <span class="logo-tag">Oregon Permit Prep</span>
+    </div>
+    <div class="player-card">
+      <div class="player-level" id="h-level">LVL 1</div>
+      <div class="player-rank"  id="h-rank">Learner's<br>Permit</div>
+    </div>
+  </div>
+
+  <div class="xp-section">
+    <div class="xp-row"><span id="xp-cur">0 XP</span><span id="xp-nxt">100 XP to Level 2</span></div>
+    <div class="xp-track"><div class="xp-fill" id="xp-fill" style="width:0%"></div></div>
+  </div>
+
+  <div class="stat-strip">
+    <div class="stat-tile"><span class="stat-val" id="s-streak">0</span><span class="stat-lbl">Best Streak</span></div>
+    <div class="stat-tile"><span class="stat-val" id="s-acc">—</span><span class="stat-lbl">Accuracy</span></div>
+    <div class="stat-tile"><span class="stat-val" id="s-weak">0</span><span class="stat-lbl">Weak Spots</span></div>
+  </div>
+
+  <div class="sec-hd"><span class="sec-hd-txt">Choose Your Mode</span><div class="sec-hd-line"></div></div>
+
+  <div class="mode-list">
+    <div class="mode-card t-red"    onclick="startMode('classic')">
+      <div class="mode-accent"></div><div class="mode-icon">📋</div>
+      <div class="mode-copy">
+        <div class="mode-name">Classic Quiz</div>
+        <div class="mode-desc">35 questions · Need 28 correct to pass</div>
+        <span class="mode-badge">Just like the real test</span>
+      </div><div class="mode-arr">›</div>
+    </div>
+    <div class="mode-card t-gold"   onclick="startMode('signblitz')">
+      <div class="mode-accent"></div><div class="mode-icon">🚦</div>
+      <div class="mode-copy">
+        <div class="mode-name">Sign Blitz</div>
+        <div class="mode-desc">Signs &amp; signals only · 10-second timer</div>
+        <span class="mode-badge">Speed bonus XP</span>
+      </div><div class="mode-arr">›</div>
+    </div>
+    <div class="mode-card t-green"  onclick="startMode('streak')">
+      <div class="mode-accent"></div><div class="mode-icon">🔥</div>
+      <div class="mode-copy">
+        <div class="mode-name">Streak Mode</div>
+        <div class="mode-desc">How far can you go? One wrong ends it</div>
+        <span class="mode-badge">Endless &amp; brutal</span>
+      </div><div class="mode-arr">›</div>
+    </div>
+    <div class="mode-card t-blue"   onclick="startMode('weakspots')">
+      <div class="mode-accent"></div><div class="mode-icon">🎯</div>
+      <div class="mode-copy">
+        <div class="mode-name">Weak Spots Drill</div>
+        <div class="mode-desc">Auto-targets every question you've missed</div>
+        <span class="mode-badge">Targeted practice</span>
+      </div><div class="mode-arr">›</div>
+    </div>
+    <div class="mode-card t-purple" onclick="startMode('boss')">
+      <div class="mode-accent"></div><div class="mode-icon">👑</div>
+      <div class="mode-copy">
+        <div class="mode-name">Boss Battle</div>
+        <div class="mode-desc">35 questions · 8-minute countdown clock</div>
+        <span class="mode-badge">Final challenge</span>
+      </div><div class="mode-arr">›</div>
+    </div>
+
+    <!-- v2: The On-Ramp Study Guide -->
+    <div class="mode-card locked" onclick="showToast('📖 The On-Ramp is coming in v2!')">
+      <div class="mode-accent" style="background:var(--dim)"></div>
+      <div class="mode-icon">📖</div>
+      <div class="mode-copy">
+        <div class="mode-name" style="color:var(--dim)">The On-Ramp</div>
+        <div class="mode-desc">Your Driving Test Study Guide · Rules, signs &amp; key laws</div>
+        <span class="coming-pill">Coming in v2</span>
+      </div>
+      <div class="mode-arr">🔒</div>
+    </div>
+  </div>
+
+  <div class="reset-row">
+    <button class="btn-reset" onclick="confirmReset()">Reset All Progress</button>
+  </div>
+
+  <!-- Install tip — shown once, dismissed to localStorage -->
+  <div class="install-tip" id="install-tip">
+    <span class="install-tip-icon">📲</span>
+    <span class="install-tip-text">Tap your browser's <strong>Share</strong> button and choose <strong>"Add to Home Screen"</strong> to use like an app!</span>
+    <button class="install-tip-close" onclick="dismissInstallTip()">✕</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     GAME
+═══════════════════════════════════════ -->
+<div id="game" class="screen">
+  <div class="game-topbar">
+    <button class="btn-back" onclick="goHome()">‹</button>
+    <div class="game-mode-name" id="g-mode-lbl">Classic Quiz</div>
+    <div class="game-counter"   id="g-counter">1 / 35</div>
+  </div>
+  <div class="game-prog-wrap">
+    <div class="game-prog-fill" id="g-prog" style="width:0%"></div>
+  </div>
+
+  <!-- Score chips (Classic / Boss) -->
+  <div class="hud-score" id="hud-score">
+    <div class="score-chip chip-c"><div class="chip-val" id="chip-c">0</div><span class="chip-lbl">Correct</span></div>
+    <div class="score-chip chip-w"><div class="chip-val" id="chip-w">0</div><span class="chip-lbl">Wrong</span></div>
+    <div class="score-chip chip-r"><div class="chip-val" id="chip-r">35</div><span class="chip-lbl">Remaining</span></div>
+  </div>
+
+  <!-- Timer (Sign Blitz) -->
+  <div class="hud-timer" id="hud-timer">
+    <div class="timer-track"><div class="timer-fill" id="timer-fill" style="width:100%"></div></div>
+    <div class="timer-label-row"><span id="timer-val">10s</span><span>⚡ SIGN BLITZ</span></div>
+  </div>
+
+  <!-- Boss clock -->
+  <div class="hud-boss" id="hud-boss">
+    <div class="boss-clock" id="boss-clock">8:00</div>
+    <div class="boss-clock-lbl">Time Remaining</div>
+  </div>
+
+  <!-- Streak counter -->
+  <div class="hud-streak" id="hud-streak">
+    <div class="streak-big" id="streak-big">🔥 0</div>
+    <div class="streak-best-lbl">Best: <span id="streak-best-val">0</span></div>
+  </div>
+
+  <!-- Weak Spots empty state -->
+  <div class="empty-state" id="empty-state">
+    <div class="empty-icon">🎯</div>
+    <div class="empty-title">No Weak Spots Yet!</div>
+    <p class="empty-body">Play Classic Quiz, Sign Blitz, or Streak Mode first. Every question you miss gets automatically saved here for targeted drilling.</p>
+    <button class="empty-cta" onclick="goHome()">← Choose a Mode</button>
+  </div>
+
+  <!-- Speed bonus flash (Sign Blitz) -->
+  <div class="speed-bonus" id="speed-bonus">⚡ SPEED BONUS!</div>
+
+  <!-- Question area -->
+  <div class="question-area" id="question-area">
+    <div class="sign-display hide" id="sign-display"></div>
+    <div class="q-pill"><div class="q-dot"></div><span id="q-num-lbl">Question 1</span></div>
+    <div class="q-text" id="q-text">Loading...</div>
+    <div class="answers-list" id="answers-list"></div>
+    <div class="feedback hide" id="feedback"></div>
+    <button class="btn-next hide" id="btn-next" onclick="nextQuestion()">NEXT QUESTION →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     RESULTS
+═══════════════════════════════════════ -->
+<div id="results" class="screen">
+  <div class="results-scroll">
+    <div class="r-badge"><div class="badge-emoji" id="r-emoji">🏆</div></div>
+    <div class="r-headline"   id="r-headline">QUIZ COMPLETE!</div>
+    <div class="r-sub"        id="r-sub">Here's how you did</div>
+    <div class="r-score-frac" id="r-score">0/35</div>
+    <div class="r-score-lbl"  id="r-score-lbl">Questions Correct</div>
+    <div class="r-banner hide" id="r-banner">
+      <div class="r-banner-title" id="r-banner-title"></div>
+      <div class="r-banner-body"  id="r-banner-body"></div>
+    </div>
+    <div class="r-stats">
+      <div class="r-stat rs-c"><div class="r-stat-val" id="rs-correct">0</div><div class="r-stat-lbl">Correct</div></div>
+      <div class="r-stat rs-w"><div class="r-stat-val" id="rs-wrong">0</div><div class="r-stat-lbl">Wrong</div></div>
+      <div class="r-stat rs-p"><div class="r-stat-val" id="rs-pct">0%</div><div class="r-stat-lbl">Accuracy</div></div>
+      <div class="r-stat rs-e"><div class="r-stat-val" id="rs-extra">0</div><div class="r-stat-lbl" id="rs-extra-lbl">Best Streak</div></div>
+    </div>
+    <div class="r-xp">
+      <div class="r-xp-num" id="r-xp">+0 XP</div>
+      <div class="r-xp-lbl">Experience Earned</div>
+    </div>
+    <div class="r-actions">
+      <button class="btn-primary"   id="r-play-again" onclick="playAgain()">PLAY AGAIN</button>
+      <button class="btn-secondary" onclick="goHome()">HOME BASE</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     LEVEL-UP OVERLAY
+═══════════════════════════════════════ -->
+<div id="levelup-overlay" class="hide">
+  <div class="lv-burst">🏆</div>
+  <div class="lv-label">Level Up!</div>
+  <div class="lv-num"  id="lv-num">2</div>
+  <div class="lv-rank" id="lv-rank">Parking Lot Pro</div>
+  <div class="lv-xp-row" id="lv-xp-row">You earned +120 XP</div>
+  <button class="lv-btn" onclick="closeLevelUp()">LET'S GO! →</button>
+</div>
+
+<!-- Confetti -->
+<div class="confetti-wrap hide" id="confetti-wrap"></div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<!-- ═══════════════════════════════════════
+     QUESTION BANK
+═══════════════════════════════════════ -->
+<script>
+const QUESTIONS = [
+  {id:1,cat:"Signs",tags:["sign","regulatory"],sign:"stop",q:"A stop sign is what shape and color?",opts:["Red octagon","Red triangle","White rectangle with red border"],ans:0,exp:"Stop signs are always red octagons (8 sides). The unique shape lets drivers recognize them even when covered in snow or otherwise hard to read.",ref:"Signs & Traffic Signals – Regulatory Signs, p.7"},
+  {id:2,cat:"Signs",tags:["sign","regulatory"],sign:"stop",q:"When you reach a stop sign, you must:",opts:["Slow down and proceed if no traffic is visible","Come to a complete stop, then yield before proceeding","Stop only if another vehicle is already in the intersection"],ans:1,exp:"You must come to a complete stop at a stop sign. Yield to other vehicles and remain stopped for pedestrians in marked or unmarked crosswalks. When it is safe, you may enter the intersection.",ref:"Signs & Traffic Signals – Regulatory Signs, p.7"},
+  {id:3,cat:"Signs",tags:["sign","regulatory"],sign:"yield",q:"A yield sign is what shape?",opts:["Yellow diamond","Red and white downward-pointing triangle","White pentagon"],ans:1,exp:"Yield signs are downward-pointing triangles with a red border and white center. Reduce speed and give the right of way — stop if needed.",ref:"Signs & Traffic Signals – Regulatory Signs, p.7"},
+  {id:4,cat:"Signs",tags:["sign","regulatory"],sign:"donotenter",q:"You see a 'Do Not Enter' sign. This means:",opts:["The road ahead is under construction","You are going the wrong way and must not enter this road","Trucks and large vehicles are prohibited"],ans:1,exp:"The Do Not Enter sign warns you not to enter a road or freeway. You will see it if you are going the wrong way.",ref:"Signs & Traffic Signals – Regulatory Signs, p.7"},
+  {id:5,cat:"Signs",tags:["sign","regulatory"],q:"A sign with a red circle and diagonal slash over a left-arrow means:",opts:["Left turns are allowed only on a green arrow","No left turn is permitted here","Left lane must turn left"],ans:1,exp:"When you see a sign with a red circle and a slash mark, it means do not make the turn shown.",ref:"Signs & Traffic Signals – Regulatory Signs, p.7"},
+  {id:6,cat:"Signs",tags:["sign","regulatory"],sign:"speedlimit",q:"A Speed Limit sign shows:",opts:["The recommended speed for ideal conditions","The minimum speed you must maintain","The maximum speed considered safe under ideal driving conditions"],ans:2,exp:"A speed limit sign shows the maximum speed considered safe under ideal conditions. You must also drive slower if conditions require it.",ref:"Speed Regulations, p.19"},
+  {id:7,cat:"Signs",tags:["sign","regulatory"],q:"Regulatory signs (speed limits, lane-use) have what standard appearance?",opts:["Yellow diamond with black symbols","White rectangle with black text or symbols","Green rectangle with white text"],ans:1,exp:"Regulatory signs are rectangular with black words or symbols on a white background. They are posted at or near where the requirement applies.",ref:"Signs & Traffic Signals – Regulatory Signs, p.8"},
+  {id:8,cat:"Signs",tags:["sign","regulatory"],q:"A 'No Turn on Red' sign means:",opts:["You may turn right on red after stopping","You may not turn during a red light — wait for green","No turns are allowed at this intersection at any time"],ans:1,exp:"A No Turn on Red sign overrides the usual rule permitting right turns on red. You must wait for the signal to turn green before turning.",ref:"Signs & Traffic Signals – Regulatory Signs, p.9"},
+  {id:9,cat:"Signs",tags:["sign","warning"],sign:"warning",q:"Warning signs in Oregon are what color and shape?",opts:["Orange rectangle","Yellow diamond","White rectangle with red border"],ans:1,exp:"Warning signs are yellow diamonds. They alert you to known hazards or changes in road conditions ahead.",ref:"Signs & Traffic Signals – Warning Signs, p.10"},
+  {id:10,cat:"Signs",tags:["sign","warning"],sign:"slippery",q:"A yellow diamond sign with a skidding car symbol means:",opts:["Winding road ahead","Slippery when wet — pavement is unusually slick in rain","Reduce speed — steep hill ahead"],ans:1,exp:"The Slippery When Wet warning sign indicates the pavement is unusually slick when wet. Slow down and increase following distance.",ref:"Signs & Traffic Signals – Warning Signs, p.12"},
+  {id:11,cat:"Signs",tags:["sign","warning"],q:"A 'Stop Ahead' warning sign tells you:",opts:["There is a stop sign coming — slow down and prepare to stop","Emergency vehicles are stopped ahead","Road work requires you to stop and wait"],ans:0,exp:"The Stop Ahead warning sign alerts you that a stop sign is coming. Slow down early so you can stop smoothly.",ref:"Signs & Traffic Signals – Warning Signs, p.11"},
+  {id:12,cat:"Signs",tags:["sign","warning"],q:"A yellow pedestrian crossing sign with a flashing beacon means:",opts:["A pedestrian is crossing, has recently crossed, or is about to cross","School children are present","The crosswalk is closed for construction"],ans:0,exp:"The flashing beacon indicates a pedestrian is crossing, has recently crossed, or is about to cross. Be alert and ready to stop.",ref:"Signs & Traffic Signals – Warning Signs, p.10"},
+  {id:13,cat:"Signs",tags:["sign"],q:"Green highway signs provide:",opts:["Warnings about construction zones","Exit information and directions to roads or cities","Motorist services like gas and food"],ans:1,exp:"Guide or information signs are green. They give exit information or show the direction of roads or cities.",ref:"Signs & Traffic Signals – Route, Guide, and Information Signs, p.13"},
+  {id:14,cat:"Signs",tags:["sign"],q:"Blue highway signs indicate:",opts:["Route numbers and distances to cities","Recreational areas and parks","Motorist services — gas, food, lodging, hospitals, EV charging"],ans:2,exp:"Blue signs tell you about services along the highway: gas, food, lodging, rest areas, EV charging, accessible facilities, and hospitals.",ref:"Signs & Traffic Signals – Motorist Service Signs, p.14"},
+  {id:15,cat:"Signs",tags:["sign"],q:"Brown highway signs point to:",opts:["Emergency services and detours","Historic, cultural, scenic, and recreational locations","School zones and crossing areas"],ans:1,exp:"Brown signs point to historic and cultural locations, as well as scenic areas, picnic grounds, and parks.",ref:"Signs & Traffic Signals – Historic, Cultural, and Recreational Signs, p.13"},
+  {id:16,cat:"Signs",tags:["sign"],q:"Orange traffic signs and cones always mean:",opts:["Detour — follow signs to alternate route","Work zone — slow down, workers may be present","Emergency vehicles — pull to the right"],ans:1,exp:"Orange is used for work zone traffic control. Workers and construction equipment may be close to traffic. Fines are doubled in all work zones.",ref:"Work Zones, p.59"},
+  {id:17,cat:"Signs",tags:["sign"],sign:"school",q:"The five-sided (pentagon) sign marks the beginning of:",opts:["A hospital zone","A school zone or school crossing","A pedestrian mall"],ans:1,exp:"The pentagon-shaped sign marks the beginning of school zones and warns you about school crossings. Actively look for children and be ready to stop.",ref:"School Zones, p.49"},
+  {id:18,cat:"Signs",tags:["sign"],sign:"railroad",q:"A yellow diamond with an 'X' and 'RR' symbols means:",opts:["No railroad service in this area","A railroad crossing is ahead","Railroad vehicles have the right of way at all times"],ans:1,exp:"The railroad advance warning sign tells you a railroad crossing is ahead. Look, listen, and slow down — you may have to stop.",ref:"Railroad Crossings, p.63"},
+  {id:19,cat:"Signals",tags:["signal"],q:"A dark traffic signal (power outage) should be treated as:",opts:["A yield sign — slow and proceed if clear","A green light — traffic can flow normally","Stop signs in all directions"],ans:2,exp:"If a signal appears dark, stop as if there are stop signs in all directions. When it is safe, proceed.",ref:"Traffic Signals, p.15"},
+  {id:20,cat:"Signals",tags:["signal"],q:"A flashing red traffic signal requires you to:",opts:["Slow down and proceed with caution","Treat it the same as a stop sign","Stop only if other traffic is present"],ans:1,exp:"A flashing red signal is treated the same as a stop sign — come to a complete stop, then proceed when safe.",ref:"Traffic Signals, p.15"},
+  {id:21,cat:"Signals",tags:["signal"],q:"A flashing yellow signal means:",opts:["Stop — signal is about to turn red","Slow down and proceed with caution","The intersection has no right-of-way rules"],ans:1,exp:"A flashing yellow signal means slow down and proceed with caution. It is a warning, not a requirement to stop.",ref:"Traffic Signals, p.16"},
+  {id:22,cat:"Signals",tags:["signal"],q:"A steady yellow signal means you should:",opts:["Speed up to clear the intersection","Stop before entering the intersection, unless you cannot stop safely","Yield to cross traffic and proceed slowly"],ans:1,exp:"A steady yellow warns you the signal is about to turn red. Stop before entering the intersection. If you cannot stop safely, drive carefully through it.",ref:"Traffic Signals, p.15"},
+  {id:23,cat:"Signals",tags:["signal"],q:"A flashing yellow arrow means:",opts:["You have the right of way to turn — proceed","You may turn in that direction, but yield to oncoming traffic and pedestrians first","Do not turn — wait for a solid green arrow"],ans:1,exp:"A flashing yellow arrow means you may turn in the indicated direction, but oncoming traffic has a steady green. You must yield to them and to pedestrians.",ref:"Traffic Signals, p.16"},
+  {id:24,cat:"Signals",tags:["signal"],q:"On a steady green signal, a driver making a left turn must:",opts:["Proceed — green gives full right of way for all movements","Yield to oncoming traffic and pedestrians before turning","Stop briefly and proceed only when there is a clear gap"],ans:1,exp:"A green signal permits all movements, but left turns must yield to pedestrians and oncoming traffic until it is safe to turn.",ref:"Traffic Signals, p.16"},
+  {id:25,cat:"Signals",tags:["signal"],q:"At a steady red light, when can you turn right?",opts:["Anytime, without stopping","After a complete stop and yielding, unless a sign says otherwise","Only when a 'Right Turn Permitted' sign is posted"],ans:1,exp:"After a complete stop and yielding to traffic and pedestrians, you may turn right on red unless a sign or police officer states otherwise.",ref:"Traffic Signals, p.15"},
+  {id:26,cat:"Signals",tags:["signal"],q:"At a red light, you may also turn LEFT when:",opts:["Turning onto a two-way road and no cars are present","Turning from a one-way road onto another one-way road","A police officer waves you through"],ans:1,exp:"When entering a one-way road from a one-way road, you may turn left on red after stopping and yielding to traffic and pedestrians.",ref:"Turns, p.40"},
+  {id:27,cat:"Speed",tags:["speed"],q:"What is the default speed limit in an alley in Oregon?",opts:["10 mph","15 mph","20 mph"],ans:1,exp:"The speed limit in alleys is 15 mph, whether posted or not.",ref:"Speed Regulations, p.19"},
+  {id:28,cat:"Speed",tags:["speed"],q:"The default speed limit in a business district is:",opts:["15 mph","20 mph","25 mph"],ans:1,exp:"In any business district, the default speed limit is 20 mph whether posted or not.",ref:"Speed Regulations, p.19"},
+  {id:29,cat:"Speed",tags:["speed"],q:"Within a school speed zone, the speed limit is:",opts:["15 mph","20 mph","25 mph"],ans:1,exp:"The school speed zone speed limit is 20 mph. It applies from the 'SCHOOL SPEED LIMIT 20' sign to the 'END SCHOOL ZONE' sign.",ref:"School Zones, p.49"},
+  {id:30,cat:"Speed",tags:["speed"],q:"In residential districts and public parks, the default speed limit is:",opts:["20 mph","25 mph","30 mph"],ans:1,exp:"In residential districts and public parks, the default limit is 25 mph.",ref:"Speed Regulations, p.19"},
+  {id:31,cat:"Speed",tags:["speed"],q:"On roads and highways that don't fall into any other category, the default speed limit is:",opts:["45 mph","55 mph","65 mph"],ans:1,exp:"On all roads and highways not meeting any other definition, the default limit is 55 mph unless a different speed is posted.",ref:"Speed Regulations, p.19"},
+  {id:32,cat:"Speed",tags:["speed"],q:"Oregon's Basic Rule requires you to:",opts:["Always drive at or near the posted speed limit","Drive at a speed that is reasonable and cautious for existing conditions","Match the speed of traffic around you at all times"],ans:1,exp:"The Basic Rule applies on all roads at all times. You must drive at a speed reasonable and cautious for existing conditions — even if that's below the speed limit.",ref:"Speed Regulations – The Basic Rule Law, p.20"},
+  {id:33,cat:"Speed",tags:["speed"],q:"A variable speed limit sign (black and white) that shows a lower number than normal:",opts:["Is a recommendation only — not legally enforceable","Is a legally enforceable speed limit police can enforce like any other","Applies only to trucks and large vehicles"],ans:1,exp:"Variable speed limit signs change the actual legal speed limit based on conditions. Police may enforce them like any other speed limit sign.",ref:"Speed Regulations – Variable Speed Signs, p.20"},
+  {id:34,cat:"Speed",tags:["speed"],q:"If you are driving slower than the normal traffic flow, you must:",opts:["Turn on your hazard lights to warn other drivers","Use the right lane or drive as close as possible to the right curb","Maintain your lane — other drivers must adjust"],ans:1,exp:"Slow drivers must use the right lane or drive as close as possible to the right curb, unless preparing to turn left. Pull off at the first safe area if congestion builds.",ref:"Speed Regulations – Slow Drivers, p.21"},
+  {id:35,cat:"Lane Travel",tags:["lanes"],q:"A broken yellow center line means:",opts:["Passing is not allowed in either direction","Passing is allowed for traffic in both directions","Passing is only allowed for traffic on the right side"],ans:1,exp:"A broken yellow center line on a two-way road indicates that passing is allowed for traffic in both directions.",ref:"Pavement Markings, p.22"},
+  {id:36,cat:"Lane Travel",tags:["lanes"],q:"A double solid yellow line means:",opts:["Passing is not allowed — and no left turns across it are ever permitted","Passing is not allowed for either direction, but left turns to enter or exit a roadway are permitted","Slow vehicles must pull right to allow passing"],ans:1,exp:"Double solid yellow lines mean passing is not allowed. However, you may turn left across them to enter or exit a roadway after waiting for oncoming traffic to clear.",ref:"Pavement Markings, p.22"},
+  {id:37,cat:"Lane Travel",tags:["lanes"],q:"A solid yellow line on YOUR side of the road means:",opts:["You are allowed to pass","You are NOT allowed to pass","You may pass only if the road is clear for 500 feet"],ans:1,exp:"A solid yellow line on your side means you may not pass. A broken yellow line on your side means passing is allowed.",ref:"Pavement Markings, p.22"},
+  {id:38,cat:"Lane Travel",tags:["lanes"],q:"Yellow diagonal stripes painted on the road mean:",opts:["A two-way left turn lane","Areas where vehicle use is not allowed — it is illegal to drive on or turn across these stripes","A bike lane shared with left-turning traffic"],ans:1,exp:"Yellow diagonal stripes mark areas where vehicle use is not allowed. It is illegal to drive in or make a turn across these stripes.",ref:"Pavement Markings, p.23"},
+  {id:39,cat:"Lane Travel",tags:["lanes"],q:"A two-way left turn lane should be used:",opts:["As a travel lane when traffic is heavy","Only to prepare for and wait to complete a left turn — not for through travel","By both left-turning and right-turning vehicles"],ans:1,exp:"It is illegal to travel in a two-way left turn lane. Enter just before your turn and wait there until traffic clears.",ref:"Pavement Markings, p.23"},
+  {id:40,cat:"Lane Travel",tags:["lanes"],q:"A solid red lane marking means:",opts:["Stop — do not enter this lane","A Transit Only lane — cars may not use it for through travel","Emergency vehicles only"],ans:1,exp:"Solid red lanes are Transit Only lanes for buses, light rail, or bikes. Striped red lines show where you may briefly enter to turn, park, or enter a driveway.",ref:"Pavement Markings, p.25"},
+  {id:41,cat:"Lane Travel",tags:["lanes"],q:"When is it legal to drive on the left side of the road?",opts:["Never — you must always stay to the right","When passing, avoiding an obstruction, on a one-way road, or when directed by traffic personnel","When the right lane is congested"],ans:1,exp:"You may drive left of center when passing, avoiding an obstruction, on a one-way road, using a center passing lane, or when directed by emergency personnel.",ref:"Lane Travel, p.18"},
+  {id:42,cat:"Space Cushion",tags:["following"],q:"A safe following distance is defined as:",opts:["At least 1 car length per 10 mph of speed","2 to 4 seconds behind the vehicle ahead","No less than 50 feet at any speed"],ans:1,exp:"A safe following distance is 2–4 seconds. For speeds greater than 30 mph, use at least 4 seconds to give yourself time to react.",ref:"Maintaining a Space Cushion – Following Distance, p.26"},
+  {id:43,cat:"Space Cushion",tags:["following"],q:"When stopped behind another vehicle, how far back should you be?",opts:["Far enough to see the rear bumper","Far enough to see where the rear tires meet the road","At least two car lengths"],ans:1,exp:"When stopping behind another vehicle, make sure you can see where the rear tires of the vehicle in front meet the road.",ref:"Maintaining a Space Cushion – Following Distance, p.27"},
+  {id:44,cat:"Space Cushion",tags:["following"],q:"You should increase your following distance when:",opts:["Driving on a dry road in good weather","Following a motorcycle or bicycle, in bad weather, or when your vehicle has a heavy load","Traffic behind you is following too closely"],ans:1,exp:"Increase following distance in many situations: wet roads, following cyclists, behind large vehicles, heavy loads, reduced visibility, stopped on a hill, or in work zones.",ref:"Maintaining a Space Cushion – Following Distance, p.27"},
+  {id:45,cat:"Space Cushion",tags:["following"],q:"If a driver behind you is tailgating, the best response is to:",opts:["Brake hard to signal them to back off","Move to the right lane or gradually reduce speed to encourage them to pass","Increase your speed to create more distance"],ans:1,exp:"If a vehicle is following too closely, move over if you can. If not, slowly reduce your speed. Never brake hard to discourage tailgating — you could get hit from behind.",ref:"Maintaining a Space Cushion – Space Cushion Behind, p.28"},
+  {id:46,cat:"Space Cushion",tags:["following"],q:"At 60 mph, the total stopping distance (from recognizing a hazard to fully stopped) is approximately:",opts:["About 150 feet","Greater than the length of a football field","About the length of a city block"],ans:1,exp:"At 60 mph, the distance from recognizing a hazard to fully stopped is greater than the length of a football field. Stopping takes much longer than most drivers expect.",ref:"Maintaining a Space Cushion – Stopping Distances, p.29"},
+  {id:47,cat:"Passing",tags:["passing"],q:"When passing another vehicle on a two-lane road, you must:",opts:["Pass to the right to avoid oncoming traffic","Pass only to the left and not exceed the speed limit","Flash your lights to warn the vehicle you are passing"],ans:1,exp:"On a two-lane road, pass only to the left. Your pass must begin in a passing zone and be completed before a no-passing zone. Do not exceed the speed limit when passing.",ref:"Passing, p.31"},
+  {id:48,cat:"Passing",tags:["passing"],q:"You may NOT cross the center line to pass when:",opts:["You are on a straight road with good visibility","You are approaching a hill, curve, intersection, or railroad crossing","You are traveling above 45 mph"],ans:1,exp:"Do not pass when your view is blocked by hills or curves, when approaching or at an intersection or railroad crossing, when a vehicle is stopped at a crosswalk, or when a solid yellow is on your side.",ref:"No Passing, p.32"},
+  {id:49,cat:"Passing",tags:["passing"],q:"You may pass on the RIGHT only when:",opts:["The vehicle ahead is driving slowly","The vehicle ahead is turning left and there is room to pass without leaving pavement or entering a bike lane","You are in a hurry and the left lane is occupied"],ans:1,exp:"You may pass on the right when the vehicle ahead is turning left and there is sufficient space, or on roads with two or more lanes going the same direction.",ref:"Passing on the Right, p.33"},
+  {id:50,cat:"Turns",tags:["turns"],q:"The general rule for turning is:",opts:["Always swing wide to check for pedestrians","Turn from the nearest lane in your direction to the nearest lane in the direction you want to go","Always complete your turn in the far lane to allow for merging traffic"],ans:1,exp:"Turn from the nearest lane in the direction you are traveling to the nearest lane in the direction you want to go. Avoid swinging wide or changing lanes while turning.",ref:"Turns – Turning Errors, p.41"},
+  {id:51,cat:"Turns",tags:["turns"],q:"You must use your turn signal at least how far before turning or changing lanes?",opts:["50 feet","100 feet","200 feet"],ans:1,exp:"If your vehicle is moving in traffic, use your turn signal at least 100 feet before the turn or lane change.",ref:"Turns & Intersections – Turn Signals, p.38"},
+  {id:52,cat:"Turns",tags:["turns"],q:"U-turns between intersections in a city are:",opts:["Allowed if the road is wide enough","Always prohibited","Only prohibited during school hours"],ans:1,exp:"U-turns are prohibited between intersections in a city, at traffic-signal-controlled intersections (unless signed), at or near railroad crossings, and anywhere visibility is insufficient.",ref:"Turns – U-Turns, p.41"},
+  {id:53,cat:"Turns",tags:["turns"],q:"When stopped at a red light on a two-way road, turning left onto a one-way street, you:",opts:["Must wait for green","May turn left on red after stopping and yielding to traffic and pedestrians","May turn only if a green arrow is displayed"],ans:1,exp:"When turning from a two-way road onto a one-way road, you may turn left on red after stopping and yielding to traffic and pedestrians.",ref:"Turns – Left Turn: Two-Way Road to One-Way Road, p.40"},
+  {id:54,cat:"Turns",tags:["turns"],q:"At a four-way stop, when two vehicles arrive at the same time, who goes first?",opts:["The driver who arrived from the north","The driver on the right has the right of way","The driver who turns on their signal first"],ans:1,exp:"At a four-way stop, allow the driver who stops first to go first. When in doubt, yield to the driver on your right.",ref:"Intersections, p.42"},
+  {id:55,cat:"Turns",tags:["turns"],q:"At a T-intersection with no signs or signals, who must yield?",opts:["Traffic on the through road yields to the road that ends","Traffic on the road that ends at the T yields to drivers on the through road","Both directions must stop and yield to pedestrians"],ans:1,exp:"If you are the driver on a road that ends at a 'T' intersection with no signs or signals, you must yield to drivers on the through road.",ref:"Intersections, p.42"},
+  {id:56,cat:"Roundabouts",tags:["roundabout"],q:"Traffic inside a roundabout travels:",opts:["Clockwise around the center island","Counterclockwise around the center island","In either direction depending on the lane"],ans:1,exp:"Traffic moves counterclockwise around the center island in a roundabout.",ref:"Roundabouts, p.43"},
+  {id:57,cat:"Roundabouts",tags:["roundabout"],q:"When entering a roundabout, you must:",opts:["Accelerate to match the speed of circulating traffic","Stop completely before entering, then proceed","Yield to traffic inside the roundabout, wait for a gap, then merge"],ans:2,exp:"Before entering, yield to traffic inside as well as exiting the roundabout. Wait for a gap and merge. Be prepared to stop if necessary.",ref:"Roundabouts, p.43"},
+  {id:58,cat:"Roundabouts",tags:["roundabout"],q:"In a roundabout, you signal your intent to exit using:",opts:["Your left turn signal as you approach your exit","Your right turn signal as you approach your exit","No signal is needed"],ans:1,exp:"Indicate your plan to exit using your right turn signal. Watch for pedestrians in the crosswalk and be prepared to stop.",ref:"Roundabouts, p.43"},
+  {id:59,cat:"Roundabouts",tags:["roundabout"],q:"When an emergency vehicle approaches a roundabout, you should:",opts:["Stop immediately inside the roundabout and let it pass","Do not enter — pull over right. If already inside, exit then pull over","Speed up to exit before the emergency vehicle arrives"],ans:1,exp:"Do not enter a roundabout when emergency vehicles are approaching. Pull over right. If already inside, never stop — exit the roundabout, then pull over.",ref:"Roundabouts – Emergency Vehicles, p.44"},
+  {id:60,cat:"Roundabouts",tags:["roundabout"],q:"In a multi-lane roundabout, large trucks may straddle both lanes. You should:",opts:["Pass on the inside lane while it turns","Never pass or drive beside a truck within the roundabout","Honk to let the driver know you are there"],ans:1,exp:"It is illegal to pass or drive beside a truck within the roundabout.",ref:"Roundabouts – Multi-Lane Roundabouts, p.44"},
+  {id:61,cat:"Pedestrians",tags:["pedestrians"],q:"You must stop for pedestrians in a crosswalk when they are:",opts:["Only in a painted crosswalk directly in front of you","In your lane, a lane next to yours, or the lane you are turning into","Across the street on the other side of a safety island"],ans:1,exp:"Stop for a pedestrian when they are in your lane, in a lane next to yours (including a bike lane), or in the lane you are turning into.",ref:"Pedestrians, p.46"},
+  {id:62,cat:"Pedestrians",tags:["pedestrians"],q:"There is a crosswalk at every intersection — even if NOT marked with paint. This is called:",opts:["A courtesy crossing","An unmarked crosswalk","A pedestrian right-of-way zone"],ans:1,exp:"There is a crosswalk at every intersection even if not marked. Imagine the sidewalk or shoulder extending across — it is at least 6 feet wide.",ref:"Pedestrians, p.47"},
+  {id:63,cat:"Pedestrians",tags:["pedestrians"],q:"You must give the right of way to a pedestrian using a white cane or guide dog:",opts:["Only if they are already in the crosswalk","When they are about to cross or crossing — remain stopped until they cross the entire road, even on green","Only if you are turning at the intersection"],ans:1,exp:"Give the right of way to a pedestrian with limited vision who is carrying a white cane or using a guide dog. Remain stopped until they have crossed the entire road — even on a green light.",ref:"Pedestrians – White Canes and Guide Dogs, p.48"},
+  {id:64,cat:"Bicycles",tags:["bicycles"],q:"When can you drive in a bike lane?",opts:["Never — bike lanes are always off-limits to cars","Only when turning or entering/leaving an alley, driveway, or private road","When the travel lane is congested"],ans:1,exp:"Do not drive or park in a bike lane. You may cross a bike lane when turning or when entering or leaving an alley, driveway, or private road.",ref:"Sharing the Road – Bicycles, p.50"},
+  {id:65,cat:"Bicycles",tags:["bicycles"],q:"When passing a bicyclist at speeds greater than 35 mph, you must:",opts:["Honk lightly so the cyclist knows you are passing","Leave enough distance to prevent contact if the cyclist were to fall","Move to the opposite lane entirely before passing"],ans:1,exp:"At speeds greater than 35 mph, you may only pass a bicyclist if you leave enough distance to prevent contact if they were to fall.",ref:"Sharing the Road – Bicycles, p.50"},
+  {id:66,cat:"Bicycles",tags:["bicycles"],q:"At an intersection with a bike box (green painted box), drivers must:",opts:["Stop inside the bike box — it marks the stop line","Stop behind the bike box — never in it — and no right turns on red","Yield to cyclists only when turning right"],ans:1,exp:"Stop for a traffic signal behind the bike box — do not stop in the box. No right turns on red at these intersections.",ref:"Sharing the Road – Bike Boxes, p.51"},
+  {id:67,cat:"Motorcycles",tags:["motorcycles"],q:"It is legal to share a lane side-by-side with a motorcycle:",opts:["If both drivers agree and there is enough room","Only on multi-lane highways","Never — it is against the law"],ans:2,exp:"It is against the law to share a lane with a person riding a motorcycle or moped. When passing, you must allow them a full lane.",ref:"Sharing the Road – Motorcycles and Mopeds, p.52"},
+  {id:68,cat:"Motorcycles",tags:["motorcycles"],q:"A motorcycle ahead has its turn signal on. You should:",opts:["Proceed — the signal means it will definitely turn","Be cautious — turn signals may not auto-cancel and the rider may have forgotten to turn it off","Honk to remind the rider"],ans:1,exp:"Turn signals do not automatically cancel on some motorcycles. Before turning in front of an oncoming motorcycle, be sure the rider is actually slowing to turn.",ref:"Sharing the Road – Motorcycles and Mopeds, p.52"},
+  {id:69,cat:"Large Vehicles",tags:["largevehicles"],q:"If you cannot see the driver in the side mirror of a large truck:",opts:["The driver can see you in their wide-angle mirror","The driver cannot see you — you are in their blind spot","You are at a safe following distance"],ans:1,exp:"If you can't see the driver in the side mirror, the driver can't see you. Stay out of blind spots on both sides.",ref:"Sharing the Road – Large Vehicles, p.53"},
+  {id:70,cat:"Large Vehicles",tags:["largevehicles"],q:"When a large truck swings wide to the left before making a right turn, you should:",opts:["Quickly pass on the right before the truck turns","Never cut between the truck and the curb — wait for it to complete the turn","Honk to let the driver know you need to get by"],ans:1,exp:"Large vehicles may need to swing wide to complete a turn. Do not cut in between a large vehicle and the curb. Allow it to complete the turn.",ref:"Sharing the Road – Large Vehicles, p.53"},
+  {id:71,cat:"Large Vehicles",tags:["largevehicles"],q:"Large trucks take about how much longer to stop compared to smaller vehicles at the same speed?",opts:["About twice the distance","About three times the distance","About the same — modern trucks have powerful brakes"],ans:1,exp:"Large vehicles take about three times the distance to stop compared to smaller vehicles at the same speed.",ref:"Sharing the Road – Large Vehicles, p.53"},
+  {id:72,cat:"School Buses",tags:["schoolbus"],q:"A school bus ahead has its red lights flashing. You must:",opts:["Slow to 20 mph and proceed with caution","Stop before reaching the bus and remain stopped until the driver turns off the red lights","Stop only if children are visible outside the bus"],ans:1,exp:"When red lights flash on a school bus, stop before reaching the bus and remain stopped until the driver turns off the flashing red lights.",ref:"School, Places of Worship, and Transit Buses, p.55"},
+  {id:73,cat:"School Buses",tags:["schoolbus"],q:"You are on a divided highway with an unpaved median and a school bus on the other side has red lights flashing. You must:",opts:["Stop — all lanes of traffic must stop for school buses","Stop only if you are on the same side of the road as the bus","Slow to 20 mph and proceed"],ans:1,exp:"On a divided highway with an unpaved median or barrier, stop only if you are on the same side as the bus. A painted median does NOT create two separate roads — all lanes must stop.",ref:"School Buses, p.55"},
+  {id:74,cat:"School Buses",tags:["schoolbus"],q:"A school bus has flashing AMBER (yellow) lights. This means:",opts:["The bus has just stopped — remain stopped","The bus is about to stop — prepare to stop","The bus is stopped but it is safe to pass slowly"],ans:1,exp:"Flashing amber lights warn traffic that the bus is about to stop to load or unload children. Prepare to stop.",ref:"School Buses, p.55"},
+  {id:75,cat:"School Buses",tags:["transit"],q:"A public transit bus signals to re-enter traffic with its turn signal and a flashing 'YIELD' sign. You must:",opts:["Yield to the bus","Maintain your speed — the bus must wait","Only yield if the bus is already partially in your lane"],ans:0,exp:"Vehicles approaching from the rear must yield when a bus driver signals to re-enter a traffic lane and there is a flashing 'YIELD' sign on the back of the bus.",ref:"Public Transit Buses, p.56"},
+  {id:76,cat:"Emergency Vehicles",tags:["emergency"],q:"When an emergency vehicle approaches using lights or a siren, you must:",opts:["Pull to the right side of the road and stop — do not stop in an intersection","Pull to the left shoulder to give the emergency vehicle room","Slow down and let the emergency vehicle pass you"],ans:0,exp:"Drive as close as safely possible to the right side of the road and stop. Do not stop in an intersection. Stay stopped until the emergency vehicle has passed or an officer tells you to move.",ref:"Emergency Vehicles, p.58"},
+  {id:77,cat:"Emergency Vehicles",tags:["emergency"],q:"After an emergency vehicle passes you, you must:",opts:["Wait at least 30 seconds before pulling back into traffic","Stay at least 500 feet behind the emergency vehicle","Follow it through any red lights it passed through"],ans:1,exp:"After the emergency vehicle passes, you must stay at least 500 feet behind it.",ref:"Emergency Vehicles, p.58"},
+  {id:78,cat:"Emergency Vehicles",tags:["emergency"],q:"On a multi-lane road, when you approach a motor vehicle stopped with lights flashing, you must:",opts:["Slow to 25 mph and pass with caution","Change lanes to avoid driving next to it, or slow down at least 5 mph under the speed limit","Stop completely until the vehicle moves"],ans:1,exp:"Change lanes so you are not driving next to the stopped vehicle. If you cannot change lanes, slow down by at least 5 mph under the posted speed limit.",ref:"Approaching Stopped Vehicles, p.57"},
+  {id:79,cat:"Railroad",tags:["railroad"],q:"When stopping at a railroad crossing with no stop line, you must stop at least:",opts:["10 feet from the nearest rail","15 feet from the nearest rail","20 feet from the nearest rail"],ans:1,exp:"When required to stop at a railroad crossing and there is no stop line, stop at least 15 feet from the nearest rail.",ref:"Railroad Crossings, p.64"},
+  {id:80,cat:"Railroad",tags:["railroad"],q:"A crossing gate is going down at a railroad crossing. You may:",opts:["Drive around it carefully if no train is visible","Drive under it if only partially down","Neither — it is illegal and extremely dangerous to drive around or under a gate at any time"],ans:2,exp:"It is against the law to drive around or under a crossing gate — while down or while being raised or lowered. It is also extremely dangerous.",ref:"Railroad Crossings, p.64"},
+  {id:81,cat:"Railroad",tags:["railroad"],q:"Your vehicle gets stuck on railroad tracks. The first thing you should do is:",opts:["Stay in the vehicle and call 911","Get out of the vehicle and get away from the tracks","Try to drive off the tracks"],ans:1,exp:"Get out of the vehicle immediately and get away from the tracks, even if you do not see a train. Then look for an Emergency Notification System (ENS) sign to alert the railroad.",ref:"Railroad Crossings, p.64"},
+  {id:82,cat:"Work Zones",tags:["workzone"],q:"Temporary speed limits posted in a work zone apply:",opts:["Only when workers are present","Only during daylight hours","At all times, even when workers are not visible"],ans:2,exp:"The temporary speed in a work zone applies at all times, even if workers are not visible. It remains in effect until you see an End Work Zone Speed Limit sign or another posted speed limit sign.",ref:"Work Zones, p.59"},
+  {id:83,cat:"Work Zones",tags:["workzone"],q:"Traffic fines in work zones are:",opts:["The same as anywhere else","Doubled","Tripled"],ans:1,exp:"Traffic fines are doubled in all work zones. You are expected to yield to workers.",ref:"Work Zones, p.59"},
+  {id:84,cat:"Work Zones",tags:["workzone"],q:"A flagger in a work zone is holding a STOP sign. You must:",opts:["Slow to 20 mph and proceed past the flagger","Stop and wait for the flagger's signal to proceed","Yield if traffic is present, then proceed"],ans:1,exp:"Flaggers use signs and hand signals to tell you which direction to travel, to slow down, or to stop. Treat a flagger's stop signal the same as a stop sign.",ref:"Work Zones, p.59"},
+  {id:85,cat:"Parking",tags:["parking"],q:"When parallel parking, your vehicle must be no more than how far from the curb?",opts:["8 inches","10 inches","12 inches"],ans:2,exp:"Park parallel to and no more than 12 inches from the curb. If there is no curb, park as close as possible to the edge of the shoulder.",ref:"Parking & Stopping – Parallel Parking, p.68"},
+  {id:86,cat:"Parking",tags:["parking"],q:"When parking downhill against a curb, turn your front wheels:",opts:["Away from the curb (toward the street)","Toward the curb","Straight ahead"],ans:1,exp:"When parking downhill against a curb, turn your wheels toward the curb. If the brake fails, the curb will stop the vehicle from rolling.",ref:"Parking & Stopping – Parking on Hills, p.69"},
+  {id:87,cat:"Parking",tags:["parking"],q:"When parking uphill against a curb, turn your front wheels:",opts:["Toward the curb","Away from the curb (toward the travel lane)","Straight ahead"],ans:1,exp:"When parking uphill against a curb, turn your wheels away from the curb toward the travel lane. If the brake fails, the curb will catch the rear of the tire.",ref:"Parking & Stopping – Parking on Hills, p.69"},
+  {id:88,cat:"Parking",tags:["parking"],q:"You must not park within how many feet of a fire hydrant?",opts:["5 feet","10 feet","15 feet"],ans:1,exp:"You cannot park within 10 feet of a fire hydrant.",ref:"Parking & Stopping – No Parking, p.70"},
+  {id:89,cat:"Parking",tags:["parking"],q:"You must not park within how many feet of a crosswalk at an intersection?",opts:["10 feet","15 feet","20 feet"],ans:2,exp:"You cannot park within 20 feet of a marked or unmarked crosswalk at an intersection.",ref:"Parking & Stopping – No Parking, p.71"},
+  {id:90,cat:"Parking",tags:["parking"],q:"Parking in a disabled space without a valid permit carries a minimum fine of:",opts:["$75","$100","$165"],ans:2,exp:"Fines for parking in a disabled space without a valid permit begin at $165 and go up to $1,000 — even for 'just a few minutes.'",ref:"Parking & Stopping – Parking Spaces for Persons with Disabilities, p.70"},
+  {id:91,cat:"Safe Driving",tags:["safety"],q:"Oregon law requires safety belts for:",opts:["Only the driver and front-seat passengers","All drivers and passengers in all available seating positions","Passengers under 18 only"],ans:1,exp:"Safety belt use is mandatory in Oregon for all drivers and passengers in all available seating positions.",ref:"Safe & Responsible Driving – Safety Belts, p.73"},
+  {id:92,cat:"Safe Driving",tags:["safety"],q:"Children must be in an approved child safety seat until they are:",opts:["6 years old or at least 4 feet tall","8 years old OR at least 4 feet 9 inches tall (and the adult belt fits correctly)","10 years old or weigh more than 80 pounds"],ans:1,exp:"Child passengers must be in approved safety seats until 8 years old or at least 4 feet 9 inches tall with a correctly fitting adult belt. Infants must ride rear-facing until age 2.",ref:"Safe & Responsible Driving – Safety Belts, p.74"},
+  {id:93,cat:"Safe Driving",tags:["safety"],q:"Oregon law on cell phone use for drivers UNDER 18 states:",opts:["They must use a hands-free device","They cannot use a cell phone or mobile electronic device at all while driving","They may use it briefly at red lights"],ans:1,exp:"It is illegal for drivers under 18 to use a cell phone or other mobile electronic device while operating a vehicle.",ref:"Dangerous Driving Behaviors – Distracted Driving, p.80"},
+  {id:94,cat:"Safe Driving",tags:["safety"],q:"Oregon law on cell phone use for drivers 18 and older states:",opts:["They may use a phone briefly for calls but not texting","They must use a hands-free accessory that requires only minimal use of a finger","Phones are permitted at speeds under 25 mph"],ans:1,exp:"Drivers 18 or older must use a hands-free accessory. It must only require minimal use of a finger to activate or deactivate.",ref:"Dangerous Driving Behaviors – Distracted Driving, p.80"},
+  {id:95,cat:"Safe Driving",tags:["safety"],q:"Oregon's Implied Consent Law means you have agreed to:",opts:["Maintain liability insurance at all times","Keep your vehicle equipment in safe operating condition","Take a breath, blood, or urine test when asked by a police officer"],ans:2,exp:"Oregon's Implied Consent Law means that by driving a motor vehicle, you have agreed to take a breath, blood, or urine test when asked by a police officer.",ref:"Dangerous Driving Behaviors – Impaired Driving, p.83"},
+  {id:96,cat:"Safe Driving",tags:["safety"],q:"Under Oregon's zero tolerance law, drivers under 21 fail the alcohol test if:",opts:["Their BAC is 0.04% or higher","Their BAC is 0.08% or higher","Their BAC is any amount above zero"],ans:2,exp:"Oregon has a zero tolerance law for drivers under 21. You fail the test if you have a blood alcohol concentration of any amount.",ref:"Dangerous Driving Behaviors – Impaired Driving, p.83"},
+  {id:97,cat:"Safe Driving",tags:["safety"],q:"Oregon's Open Container law states:",opts:["It's allowed only for passengers, not the driver","Open containers must be in the trunk","It's allowed if the driver's BAC is below 0.08%"],ans:1,exp:"Oregon's Open Container law makes it illegal to have an open bottle or container with alcohol while in a vehicle on any road. Any open bottles must be in the trunk.",ref:"Dangerous Driving Behaviors – Impaired Driving, p.83"},
+  {id:98,cat:"Safe Driving",tags:["safety"],q:"When using high beam headlights, you must dim them when an oncoming vehicle is within:",opts:["350 feet","500 feet","750 feet"],ans:1,exp:"You must dim your high beams when an oncoming vehicle is within 500 feet. Also dim when following another vehicle within 350 feet.",ref:"Hazardous Conditions – Using Lights, p.76"},
+  {id:99,cat:"Safe Driving",tags:["safety"],q:"If your vehicle begins to skid, you should:",opts:["Steer opposite the skid and apply brakes firmly","Stay off the brakes and steer in the direction you want the vehicle to go","Apply the parking brake to regain control"],ans:1,exp:"Stay off the brakes — until the vehicle slows, brakes won't be effective. Steer in the direction you want to go. As it straightens, turn the wheel back the other way.",ref:"Hazardous Conditions – Skidding, p.79"},
+  {id:100,cat:"Safe Driving",tags:["safety"],q:"To avoid a collision, a driver has three tools available. They are:",opts:["Honk, swerve, and accelerate","Stop quickly, turn quickly, or speed up","Flash lights, use horn, and change lanes"],ans:1,exp:"Three tools to avoid a collision: stop quickly (if distance allows), turn quickly (usually faster than stopping), or speed up (when there is room ahead and a vehicle is about to hit you from the side or rear).",ref:"Safe & Responsible Driving – Avoiding a Collision, p.74"}
+];
+
+/* ── Sign SVGs ── */
+const SIGNS = {
+  stop:`<svg width="88" height="88" viewBox="0 0 88 88"><polygon points="44,5 73,18 83,44 73,70 44,83 15,70 5,44 15,18" fill="#CC0000" stroke="white" stroke-width="3.5"/><text x="44" y="52" text-anchor="middle" fill="white" font-family="Arial Black,sans-serif" font-size="15" font-weight="900">STOP</text></svg>`,
+  yield:`<svg width="88" height="88" viewBox="0 0 88 88"><polygon points="44,10 80,74 8,74" fill="white" stroke="#CC0000" stroke-width="5"/><polygon points="44,22 71,68 17,68" fill="white" stroke="#CC0000" stroke-width="2.5"/><text x="44" y="62" text-anchor="middle" fill="#CC0000" font-family="Arial Black,sans-serif" font-size="11" font-weight="900">YIELD</text></svg>`,
+  donotenter:`<svg width="88" height="88" viewBox="0 0 88 88"><circle cx="44" cy="44" r="39" fill="#CC0000" stroke="white" stroke-width="3"/><rect x="14" y="36" width="60" height="16" fill="white" rx="2"/><text x="44" y="30" text-anchor="middle" fill="white" font-family="Arial,sans-serif" font-size="9" font-weight="bold">DO NOT</text><text x="44" y="67" text-anchor="middle" fill="white" font-family="Arial,sans-serif" font-size="9" font-weight="bold">ENTER</text></svg>`,
+  warning:`<svg width="88" height="88" viewBox="0 0 88 88"><polygon points="44,8 80,72 8,72" fill="#FFCC00" stroke="black" stroke-width="2.5"/><text x="44" y="56" text-anchor="middle" fill="black" font-family="Arial Black,sans-serif" font-size="24" font-weight="900">!</text></svg>`,
+  speedlimit:`<svg width="72" height="90" viewBox="0 0 72 90"><rect x="3" y="3" width="66" height="84" fill="white" stroke="black" stroke-width="3" rx="4"/><text x="36" y="28" text-anchor="middle" fill="black" font-family="Arial,sans-serif" font-size="11" font-weight="bold">SPEED</text><text x="36" y="42" text-anchor="middle" fill="black" font-family="Arial,sans-serif" font-size="11" font-weight="bold">LIMIT</text><text x="36" y="76" text-anchor="middle" fill="black" font-family="Arial Black,sans-serif" font-size="34" font-weight="900">55</text></svg>`,
+  slippery:`<svg width="88" height="88" viewBox="0 0 88 88"><polygon points="44,8 80,72 8,72" fill="#FFCC00" stroke="black" stroke-width="2.5"/><text x="44" y="52" text-anchor="middle" fill="black" font-family="Arial,sans-serif" font-size="8.5">SLIPPERY</text><text x="44" y="64" text-anchor="middle" fill="black" font-family="Arial,sans-serif" font-size="8.5">WHEN WET</text></svg>`,
+  school:`<svg width="88" height="90" viewBox="0 0 88 90"><polygon points="44,5 83,30 83,75 5,75 5,30" fill="#FFCC00" stroke="black" stroke-width="2"/><text x="44" y="42" text-anchor="middle" fill="black" font-family="Arial,sans-serif" font-size="9" font-weight="bold">SCHOOL</text><text x="44" y="56" text-anchor="middle" fill="black" font-family="Arial,sans-serif" font-size="8">CROSSING</text></svg>`,
+  railroad:`<svg width="88" height="88" viewBox="0 0 88 88"><polygon points="44,8 80,72 8,72" fill="#FFCC00" stroke="black" stroke-width="2.5"/><line x1="30" y1="28" x2="58" y2="66" stroke="black" stroke-width="4"/><line x1="58" y1="28" x2="30" y2="66" stroke="black" stroke-width="4"/><text x="44" y="62" text-anchor="middle" fill="black" font-family="Arial Black,sans-serif" font-size="11" font-weight="900">RR</text></svg>`
+};
+</script>
+
+<!-- ═══════════════════════════════════════
+     CORE ENGINE
+═══════════════════════════════════════ -->
+<script>
+/* ════════════════════════════════════════
+   CONSTANTS
+════════════════════════════════════════ */
+const CLASSIC_TOTAL  = 35;
+const CLASSIC_PASS   = 28;
+
+const XP_PER_CORRECT = 10;
+const XP_PER_WRONG   = 2;
+const XP_BONUS_PASS  = 50;
+
+// XP required to START each level (index = level number)
+const XP_THRESHOLDS = [0, 100, 250, 500, 900, 1500, 2400, 3600, 5200, 7500, 99999];
+const RANKS = [
+  '', 'Learner\'s Permit', 'Parking Lot Pro', 'Neighborhood Navigator',
+  'Street Certified', 'Road Runner', 'Highway Hero', 'Traffic Tamer',
+  'Permit Master', 'Road Scholar', 'DRIVE MASTER 5000 👑'
+];
+const RANK_ICONS = ['', '🚗', '🅿️', '🏘️', '📋', '🏃', '🛣️', '🚦', '🎯', '📚', '👑'];
+
+/* ════════════════════════════════════════
+   STATE
+════════════════════════════════════════ */
+let state = {
+  // session
+  mode:          null,
+  queue:         [],
+  idx:           0,
+  numQ:          0,
+  correct:       0,
+  wrong:         0,
+  streak:        0,
+  maxStreak:     0,
+  answered:      false,
+  sessionXP:     0,   // XP earned this session (for results display)
+  // persistent
+  xp:            0,
+  bestStreak:    0,
+  totalRight:    0,
+  totalAnswered: 0,
+  weakIds:       [],
+  sessions:      0    // total sessions played (for future study guide hook)
+};
+
+/* ════════════════════════════════════════
+   LOCALSTORAGE  — robust persistence
+════════════════════════════════════════ */
+const SAVE_KEY = 'dm5000_v1';  // versioned key so future changes don't break saves
+
+function saveProgress() {
+  const save = {
+    xp:            state.xp,
+    bestStreak:    state.bestStreak,
+    totalRight:    state.totalRight,
+    totalAnswered: state.totalAnswered,
+    weakIds:       state.weakIds,
+    sessions:      state.sessions
+  };
+  try {
+    localStorage.setItem(SAVE_KEY, JSON.stringify(save));
+  } catch (e) {
+    // Storage quota exceeded or private mode — fail silently
+  }
+}
+
+function loadProgress() {
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (!raw) return;
+    const save = JSON.parse(raw);
+    // Validate each field before trusting it
+    state.xp            = (typeof save.xp === 'number'            && save.xp >= 0)          ? save.xp            : 0;
+    state.bestStreak    = (typeof save.bestStreak === 'number'     && save.bestStreak >= 0)   ? save.bestStreak    : 0;
+    state.totalRight    = (typeof save.totalRight === 'number'     && save.totalRight >= 0)   ? save.totalRight    : 0;
+    state.totalAnswered = (typeof save.totalAnswered === 'number'  && save.totalAnswered >= 0)? save.totalAnswered : 0;
+    state.weakIds       = Array.isArray(save.weakIds)                                         ? save.weakIds       : [];
+    state.sessions      = (typeof save.sessions === 'number'       && save.sessions >= 0)     ? save.sessions      : 0;
+  } catch (e) {
+    // Corrupted save — start fresh
+  }
+}
+
+function resetProgress() {
+  try { localStorage.removeItem(SAVE_KEY); } catch(e) {}
+  state.xp = 0; state.bestStreak = 0; state.totalRight = 0;
+  state.totalAnswered = 0; state.weakIds = []; state.sessions = 0;
+  updateHomeXP();
+  showToast('🔄 Progress reset — starting fresh!');
+}
+
+function confirmReset() {
+  if (confirm('Reset ALL progress, XP, and streaks? This cannot be undone.')) {
+    resetProgress();
+  }
+}
+
+/* ════════════════════════════════════════
+   XP + LEVEL HELPERS
+════════════════════════════════════════ */
+function getLevel(xp) {
+  for (let i = XP_THRESHOLDS.length - 1; i >= 0; i--) {
+    if (xp >= XP_THRESHOLDS[i]) return i;
+  }
+  return 1;
+}
+
+function getLevelProgress(xp) {
+  const lv   = getLevel(xp);
+  const cur  = XP_THRESHOLDS[lv]     || 0;
+  const next = XP_THRESHOLDS[lv + 1] || XP_THRESHOLDS[lv] + 1;
+  const pct  = next > cur ? Math.min(100, Math.round(((xp - cur) / (next - cur)) * 100)) : 100;
+  return { lv, cur, next, pct };
+}
+
+function updateHomeXP() {
+  const { lv, next, pct } = getLevelProgress(state.xp);
+
+  document.getElementById('h-level').textContent = 'LVL ' + lv;
+  document.getElementById('h-rank').textContent  = RANKS[lv] || RANKS[RANKS.length - 1];
+  document.getElementById('xp-fill').style.width = pct + '%';
+  document.getElementById('xp-cur').textContent  = state.xp + ' XP';
+  document.getElementById('xp-nxt').textContent  = lv >= 10
+    ? '🏆 Max Level!'
+    : (next - state.xp) + ' XP to Level ' + (lv + 1);
+
+  document.getElementById('s-streak').textContent = state.bestStreak;
+  document.getElementById('s-acc').textContent    = state.totalAnswered > 0
+    ? Math.round((state.totalRight / state.totalAnswered) * 100) + '%'
+    : '—';
+  document.getElementById('s-weak').textContent   = state.weakIds.length;
+}
+
+/* ════════════════════════════════════════
+   ANIMATED XP BAR  (on home screen return)
+   Counts bar from old % to new % over 900ms
+════════════════════════════════════════ */
+function animateXPBar(fromXP, toXP, callback) {
+  const fill     = document.getElementById('xp-fill');
+  const xpCurEl  = document.getElementById('xp-cur');
+  const xpNxtEl  = document.getElementById('xp-nxt');
+  const duration = 900;
+  const start    = performance.now();
+
+  function tick(now) {
+    const progress = Math.min((now - start) / duration, 1);
+    // ease-out-cubic
+    const eased    = 1 - Math.pow(1 - progress, 3);
+    const currentXP = Math.round(fromXP + (toXP - fromXP) * eased);
+
+    const { lv, next, pct } = getLevelProgress(currentXP);
+    fill.style.width        = pct + '%';
+    xpCurEl.textContent     = currentXP + ' XP';
+    xpNxtEl.textContent     = lv >= 10 ? '🏆 Max Level!' : (next - currentXP) + ' XP to Level ' + (lv + 1);
+
+    if (progress < 1) {
+      requestAnimationFrame(tick);
+    } else {
+      if (typeof callback === 'function') callback();
+    }
+  }
+  requestAnimationFrame(tick);
+}
+
+/* ════════════════════════════════════════
+   LEVEL-UP CELEBRATION
+════════════════════════════════════════ */
+function checkLevelUp(oldXP, newXP, xpEarned, afterCallback) {
+  const oldLv = getLevel(oldXP);
+  const newLv = getLevel(newXP);
+
+  if (newLv > oldLv) {
+    // Fire confetti
+    spawnConfetti();
+    // Populate overlay
+    document.getElementById('lv-num').textContent   = newLv;
+    document.getElementById('lv-rank').textContent  = (RANK_ICONS[newLv] || '') + ' ' + (RANKS[newLv] || '');
+    document.getElementById('lv-xp-row').textContent = 'You earned +' + xpEarned + ' XP this session';
+    // Store callback for when player dismisses
+    state._levelUpCallback = afterCallback;
+    document.getElementById('levelup-overlay').classList.remove('hide');
+  } else {
+    if (typeof afterCallback === 'function') afterCallback();
+  }
+}
+
+function closeLevelUp() {
+  document.getElementById('levelup-overlay').classList.add('hide');
+  document.getElementById('confetti-wrap').classList.add('hide');
+  document.getElementById('confetti-wrap').innerHTML = '';
+  if (typeof state._levelUpCallback === 'function') {
+    state._levelUpCallback();
+    state._levelUpCallback = null;
+  }
+}
+
+/* ════════════════════════════════════════
+   CONFETTI
+════════════════════════════════════════ */
+function spawnConfetti() {
+  const wrap   = document.getElementById('confetti-wrap');
+  wrap.innerHTML = '';
+  wrap.classList.remove('hide');
+  const colors = ['#C8102E','#B3995D','#F0D090','#ffffff','#AA0000','#D4B97A'];
+  for (let i = 0; i < 55; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'cdot';
+    dot.style.cssText = `
+      left:${Math.random() * 100}%;
+      background:${colors[Math.floor(Math.random() * colors.length)]};
+      width:${6 + Math.random() * 7}px;
+      height:${6 + Math.random() * 7}px;
+      border-radius:${Math.random() > .5 ? '50%' : '2px'};
+      animation-duration:${1.8 + Math.random() * 1.6}s;
+      animation-delay:${Math.random() * 0.6}s;
+    `;
+    wrap.appendChild(dot);
+  }
+  // Auto-hide confetti after 4s
+  setTimeout(() => {
+    wrap.classList.add('hide');
+    wrap.innerHTML = '';
+  }, 4000);
+}
+
+/* ════════════════════════════════════════
+   TOAST NOTIFICATION
+════════════════════════════════════════ */
+let _toastTimer = null;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+/* ════════════════════════════════════════
+   SCREEN NAVIGATION
+════════════════════════════════════════ */
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function goHome() {
+  clearInterval(state._timer);
+  loadProgress();
+  updateHomeXP();
+  showScreen('home');
+}
+
+/* ════════════════════════════════════════
+   SHUFFLE UTILITY
+════════════════════════════════════════ */
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+/* ════════════════════════════════════════
+   HUD HELPERS — show/hide mode-specific UI
+════════════════════════════════════════ */
+function resetHUDs() {
+  document.getElementById('hud-score').classList.remove('hide');
+  document.getElementById('hud-timer').classList.remove('visible');
+  document.getElementById('hud-boss').classList.remove('visible');
+  document.getElementById('hud-streak').classList.remove('visible');
+  document.getElementById('empty-state').classList.remove('visible');
+  document.getElementById('question-area').style.display = 'flex';
+}
+
+function showHUD(id) {
+  document.getElementById(id).classList.add('visible');
+}
+
+/* ════════════════════════════════════════
+   MODE LAUNCHER
+════════════════════════════════════════ */
+function startMode(mode) {
+  clearInterval(state._timer);
+  clearTimeout(state._timerTimeout);
+
+  state.mode      = mode;
+  state.idx       = 0;
+  state.correct   = 0;
+  state.wrong     = 0;
+  state.streak    = 0;
+  state.maxStreak = 0;
+  state.answered  = false;
+  state.sessionXP = 0;
+
+  resetHUDs();
+
+  // ── Classic Quiz ──
+  if (mode === 'classic') {
+    state.queue = shuffle(QUESTIONS).slice(0, CLASSIC_TOTAL);
+    state.numQ  = CLASSIC_TOTAL;
+    document.getElementById('g-mode-lbl').textContent = 'Classic Quiz';
+    showScreen('game');
+    renderQuestion();
+  }
+
+  // ── Sign Blitz ──
+  else if (mode === 'signblitz') {
+    const signQs = QUESTIONS.filter(q => q.tags.includes('sign'));
+    state.queue = shuffle(signQs);
+    state.numQ  = state.queue.length;
+    document.getElementById('g-mode-lbl').textContent = 'Sign Blitz';
+    document.getElementById('hud-score').classList.add('hide');
+    showHUD('hud-timer');
+    showScreen('game');
+    renderQuestion();
+    startSignBlitzTimer();
+  }
+
+  // ── Streak Mode ──
+  else if (mode === 'streak') {
+    // Endless — cycle through shuffled questions indefinitely
+    state.queue = shuffle(QUESTIONS);
+    state.numQ  = QUESTIONS.length;
+    document.getElementById('g-mode-lbl').textContent = 'Streak Mode';
+    document.getElementById('hud-score').classList.add('hide');
+    showHUD('hud-streak');
+    updateStreakHUD();
+    showScreen('game');
+    renderQuestion();
+  }
+
+  // ── Weak Spots Drill ──
+  else if (mode === 'weakspots') {
+    const weakQs = QUESTIONS.filter(q => state.weakIds.includes(q.id));
+    if (weakQs.length === 0) {
+      document.getElementById('g-mode-lbl').textContent = 'Weak Spots Drill';
+      document.getElementById('hud-score').classList.add('hide');
+      document.getElementById('question-area').style.display = 'none';
+      document.getElementById('empty-state').classList.add('visible');
+      showScreen('game');
+      return;
+    }
+    state.queue = shuffle(weakQs);
+    state.numQ  = state.queue.length;
+    document.getElementById('g-mode-lbl').textContent = 'Weak Spots Drill';
+    showScreen('game');
+    renderQuestion();
+  }
+
+  // ── Boss Battle ──
+  else if (mode === 'boss') {
+    state.queue = shuffle(QUESTIONS).slice(0, CLASSIC_TOTAL);
+    state.numQ  = CLASSIC_TOTAL;
+    document.getElementById('g-mode-lbl').textContent = 'Boss Battle';
+    document.getElementById('hud-score').classList.add('hide');
+    showHUD('hud-boss');
+    showScreen('game');
+    renderQuestion();
+    startBossTimer();
+  }
+}
+
+/* ════════════════════════════════════════
+   SIGN BLITZ TIMER  (10s per question)
+════════════════════════════════════════ */
+const BLITZ_TIME = 10;          // seconds per question
+const BLITZ_BONUS_THRESHOLD = 6; // seconds remaining to earn speed bonus
+const BLITZ_BONUS_XP = 5;
+
+function startSignBlitzTimer() {
+  clearInterval(state._timer);
+  state._blitzTimeLeft = BLITZ_TIME;
+  updateBlitzTimer(BLITZ_TIME);
+
+  state._timer = setInterval(() => {
+    state._blitzTimeLeft--;
+    updateBlitzTimer(state._blitzTimeLeft);
+
+    if (state._blitzTimeLeft <= 0) {
+      clearInterval(state._timer);
+      // Time's up — auto-wrong
+      if (!state.answered) timeUpAnswer();
+    }
+  }, 1000);
+}
+
+function updateBlitzTimer(t) {
+  const fill  = document.getElementById('timer-fill');
+  const label = document.getElementById('timer-val');
+  const pct   = Math.max(0, (t / BLITZ_TIME) * 100);
+  fill.style.width = pct + '%';
+  label.textContent = t + 's';
+  fill.classList.toggle('urgent', t <= 3);
+}
+
+function timeUpAnswer() {
+  if (state.answered) return;
+  state.answered = true;
+  state.wrong++;
+  state.streak = 0;
+  state.totalAnswered++;
+  const q = state.queue[state.idx];
+  if (!state.weakIds.includes(q.id)) state.weakIds.push(q.id);
+
+  // Disable buttons and reveal correct
+  const btns = document.querySelectorAll('.ans-btn');
+  btns.forEach(b => b.setAttribute('disabled', true));
+  btns[q.ans].classList.add('s-reveal');
+
+  document.getElementById('chip-w').textContent = state.wrong;
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback fb-no show';
+  fb.innerHTML = `<div class="fb-title">⏰ Time's up!</div>${q.exp}<div class="fb-ref">📖 ${q.ref}</div>`;
+
+  const nxt = document.getElementById('btn-next');
+  const last = (state.idx === state.queue.length - 1);
+  nxt.textContent = last ? 'SEE RESULTS →' : 'NEXT QUESTION →';
+  nxt.className   = 'btn-next show';
+}
+
+function flashSpeedBonus() {
+  const el = document.getElementById('speed-bonus');
+  el.classList.remove('pop');
+  void el.offsetWidth; // reflow
+  el.classList.add('pop');
+  setTimeout(() => el.classList.remove('pop'), 750);
+}
+
+/* ════════════════════════════════════════
+   BOSS BATTLE TIMER  (8 minutes)
+════════════════════════════════════════ */
+const BOSS_SECONDS = 8 * 60;
+
+function startBossTimer() {
+  clearInterval(state._timer);
+  state._bossTimeLeft = BOSS_SECONDS;
+  updateBossClock(BOSS_SECONDS);
+
+  state._timer = setInterval(() => {
+    state._bossTimeLeft--;
+    updateBossClock(state._bossTimeLeft);
+    if (state._bossTimeLeft <= 0) {
+      clearInterval(state._timer);
+      showResults();
+    }
+  }, 1000);
+}
+
+function updateBossClock(t) {
+  const mins = Math.floor(t / 60);
+  const secs = t % 60;
+  const str  = mins + ':' + String(secs).padStart(2, '0');
+  const el   = document.getElementById('boss-clock');
+  el.textContent = str;
+  el.classList.toggle('urgent', t <= 60);
+}
+
+/* ════════════════════════════════════════
+   STREAK HUD UPDATER
+════════════════════════════════════════ */
+function updateStreakHUD() {
+  const el = document.getElementById('streak-big');
+  el.textContent = '🔥 ' + state.streak;
+  el.classList.toggle('on-fire', state.streak >= 5);
+  document.getElementById('streak-best-val').textContent =
+    Math.max(state.bestStreak, state.maxStreak);
+}
+
+/* ════════════════════════════════════════
+   QUESTION RENDERER
+════════════════════════════════════════ */
+function renderQuestion() {
+  if (state.idx >= state.queue.length) {
+    showResults();
+    return;
+  }
+
+  const q   = state.queue[state.idx];
+  const num = state.idx + 1;
+
+  document.getElementById('g-counter').textContent = num + ' / ' + state.numQ;
+  document.getElementById('q-num-lbl').textContent = 'Question ' + num;
+  document.getElementById('chip-c').textContent    = state.correct;
+  document.getElementById('chip-w').textContent    = state.wrong;
+  document.getElementById('chip-r').textContent    = state.numQ - state.idx;
+  document.getElementById('g-prog').style.width    = Math.round(((num - 1) / state.numQ) * 100) + '%';
+
+  // Sign display
+  const signEl = document.getElementById('sign-display');
+  if (q.sign && SIGNS[q.sign]) {
+    signEl.innerHTML = SIGNS[q.sign];
+    signEl.classList.remove('hide');
+  } else {
+    signEl.innerHTML = '';
+    signEl.classList.add('hide');
+  }
+
+  document.getElementById('q-text').textContent = q.q;
+
+  // Build answer buttons
+  const list    = document.getElementById('answers-list');
+  const letters = ['A', 'B', 'C'];
+  list.innerHTML = '';
+  q.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'ans-btn';
+    btn.innerHTML = `<span class="ans-ltr">${letters[i]}</span><span>${opt}</span>`;
+    btn.onclick = () => handleAnswer(i, q);
+    list.appendChild(btn);
+  });
+
+  // Reset feedback + next button
+  const fb  = document.getElementById('feedback');
+  const nxt = document.getElementById('btn-next');
+  fb.className  = 'feedback hide';
+  fb.innerHTML  = '';
+  nxt.className = 'btn-next hide';
+
+  state.answered = false;
+}
+
+/* ════════════════════════════════════════
+   ANSWER HANDLER
+════════════════════════════════════════ */
+function handleAnswer(chosen, q) {
+  if (state.answered) return;
+  state.answered = true;
+
+  // Stop Sign Blitz timer
+  if (state.mode === 'signblitz') clearInterval(state._timer);
+
+  const correct = (chosen === q.ans);
+  const btns    = document.querySelectorAll('.ans-btn');
+  const letters = ['A', 'B', 'C'];
+
+  btns.forEach(b => b.setAttribute('disabled', true));
+  btns[chosen].classList.add(correct ? 's-correct' : 's-wrong');
+  if (!correct) btns[q.ans].classList.add('s-reveal');
+
+  let bonusXP = 0;
+
+  if (correct) {
+    state.correct++;
+    state.streak++;
+    state.maxStreak = Math.max(state.maxStreak, state.streak);
+    state.totalRight++;
+
+    // Sign Blitz speed bonus
+    if (state.mode === 'signblitz' && state._blitzTimeLeft >= BLITZ_BONUS_THRESHOLD) {
+      bonusXP = BLITZ_BONUS_XP;
+      flashSpeedBonus();
+    }
+
+    // Clear this question from weak spots if they got it right in Weak Spots Drill
+    if (state.mode === 'weakspots') {
+      state.weakIds = state.weakIds.filter(id => id !== q.id);
+    }
+  } else {
+    state.wrong++;
+    state.streak = 0;
+    if (!state.weakIds.includes(q.id)) state.weakIds.push(q.id);
+  }
+  state.totalAnswered++;
+
+  document.getElementById('chip-c').textContent = state.correct;
+  document.getElementById('chip-w').textContent = state.wrong;
+
+  // Update streak HUD if in streak mode
+  if (state.mode === 'streak') updateStreakHUD();
+
+  // Feedback
+  const fb = document.getElementById('feedback');
+  if (correct) {
+    const bonus = bonusXP > 0 ? ` <strong>+${bonusXP} Speed Bonus XP!</strong>` : '';
+    fb.className = 'feedback fb-ok show';
+    fb.innerHTML = `<div class="fb-title">✅ Correct!${bonus}</div>${q.exp}<div class="fb-ref">📖 ${q.ref}</div>`;
+  } else {
+    fb.className = 'feedback fb-no show';
+    fb.innerHTML = `<div class="fb-title">❌ Not quite — the answer was ${letters[q.ans]}</div>${q.exp}<div class="fb-ref">📖 ${q.ref}</div>`;
+  }
+
+  const nxt  = document.getElementById('btn-next');
+  const last = (state.idx === state.queue.length - 1);
+
+  // Streak mode: wrong answer ends the run immediately
+  if (state.mode === 'streak' && !correct) {
+    nxt.textContent = 'SEE RESULTS →';
+    nxt.className   = 'btn-next show';
+    state.idx = state.queue.length; // force results on next()
+    return;
+  }
+
+  nxt.textContent = last ? 'SEE RESULTS →' : 'NEXT QUESTION →';
+  nxt.className   = 'btn-next show';
+}
+
+/* ════════════════════════════════════════
+   NEXT QUESTION
+════════════════════════════════════════ */
+function nextQuestion() {
+  state.idx++;
+
+  // Streak mode: loop back through shuffled questions endlessly
+  if (state.mode === 'streak' && state.idx >= state.queue.length) {
+    state.queue = shuffle(QUESTIONS);
+    state.idx   = 0;
+  }
+
+  renderQuestion();
+
+  // Sign Blitz: restart timer for each new question
+  if (state.mode === 'signblitz') startSignBlitzTimer();
+}
+
+/* ════════════════════════════════════════
+   RESULTS SCREEN
+════════════════════════════════════════ */
+function showResults() {
+  clearInterval(state._timer);
+  const oldXP = state.xp;
+
+  // Mode-specific XP formula
+  let xpEarned;
+  if (state.mode === 'streak') {
+    // Streak: 15 XP per correct, streak multiplier
+    xpEarned = Math.round(state.correct * 15 * (1 + state.maxStreak * 0.05));
+  } else if (state.mode === 'signblitz') {
+    // Sign Blitz: 8 XP per correct (speed bonuses already added in handleAnswer)
+    xpEarned = (state.correct * 8) + (state.wrong * 1);
+  } else if (state.mode === 'weakspots') {
+    // Weak Spots: 12 XP per correct (rewarded for hard drilling)
+    xpEarned = (state.correct * 12) + (state.wrong * 2);
+  } else {
+    // Classic / Boss
+    xpEarned = (state.correct * XP_PER_CORRECT)
+             + (state.wrong   * XP_PER_WRONG)
+             + (state.correct >= CLASSIC_PASS ? XP_BONUS_PASS : 0);
+  }
+
+  state.xp         += xpEarned;
+  state.sessionXP   = xpEarned;
+  state.bestStreak  = Math.max(state.bestStreak, state.maxStreak);
+  state.sessions++;
+  saveProgress();
+
+  const total  = state.correct + state.wrong;
+  const pct    = total > 0 ? Math.round((state.correct / total) * 100) : 0;
+  const passed = state.correct >= CLASSIC_PASS;
+
+  // Mode-specific headline logic
+  let emoji, headline, sub;
+  const isClassicOrBoss = (state.mode === 'classic' || state.mode === 'boss');
+
+  if (state.mode === 'streak') {
+    if (state.maxStreak >= 15) { emoji = '🏆'; headline = 'LEGENDARY!'; }
+    else if (state.maxStreak >= 10) { emoji = '🔥'; headline = 'ON FIRE!'; }
+    else if (state.maxStreak >= 5)  { emoji = '⭐'; headline = 'NICE STREAK!'; }
+    else                             { emoji = '💪'; headline = 'KEEP GOING!'; }
+    sub = 'You answered ' + state.correct + ' in a row before it ended!';
+  } else if (state.mode === 'signblitz') {
+    emoji    = pct >= 80 ? '⚡' : pct >= 60 ? '🚦' : '📚';
+    headline = pct >= 80 ? 'BLAZING FAST!' : pct >= 60 ? 'SOLID BLITZ!' : 'KEEP BLITZING!';
+    sub      = 'Sign knowledge is ' + pct + '% solid — ' + state.correct + '/' + total + ' correct';
+  } else if (state.mode === 'weakspots') {
+    emoji    = pct >= 80 ? '🎯' : '💪';
+    headline = pct >= 80 ? 'WEAK SPOTS CRUSHED!' : 'GETTING STRONGER!';
+    sub      = state.weakIds.length === 0
+      ? 'All weak spots cleared — you\'re ready!'
+      : state.weakIds.length + ' question(s) still need work';
+  } else if (passed) {
+    emoji    = state.correct === CLASSIC_TOTAL ? '🏆' : '⭐';
+    headline = state.correct === CLASSIC_TOTAL ? 'PERFECT!'      : 'YOU PASSED!';
+    sub      = 'Outstanding driving knowledge, Tyler!';
+  } else {
+    emoji    = pct >= 50 ? '💪' : '📚';
+    headline = 'KEEP STUDYING!';
+    sub      = 'Every wrong answer gets you closer to ready.';
+  }
+
+  document.getElementById('r-emoji').textContent    = emoji;
+  document.getElementById('r-headline').textContent = headline;
+  document.getElementById('r-sub').textContent      = sub;
+  document.getElementById('r-score').textContent    = state.correct + '/' + total;
+  document.getElementById('r-score-lbl').textContent = 'Questions Correct';
+
+  // Pass/Fail banner — only for Classic and Boss
+  const banner = document.getElementById('r-banner');
+  if (isClassicOrBoss) {
+    banner.classList.remove('hide', 'pass', 'fail');
+    banner.classList.add(passed ? 'pass' : 'fail');
+    document.getElementById('r-banner-title').textContent = passed
+      ? '✅ PASSING SCORE!'
+      : '❌ NOT PASSING — YET';
+    document.getElementById('r-banner-body').textContent = passed
+      ? 'The real test requires ' + CLASSIC_PASS + '/' + CLASSIC_TOTAL + '. You nailed it!'
+      : 'You needed ' + CLASSIC_PASS + '/35. Only '
+        + (CLASSIC_PASS - state.correct) + ' question(s) away — drill those weak spots!';
+  } else {
+    banner.classList.add('hide');
+  }
+
+  // Stat boxes — 4th box label changes by mode
+  document.getElementById('rs-correct').textContent = state.correct;
+  document.getElementById('rs-wrong').textContent   = state.wrong;
+  document.getElementById('rs-pct').textContent     = pct + '%';
+
+  const extraVal = document.getElementById('rs-extra');
+  const extraLbl = document.getElementById('rs-extra-lbl');
+  if (state.mode === 'streak') {
+    extraVal.textContent = state.maxStreak;
+    extraLbl.textContent = 'Best Streak';
+  } else if (state.mode === 'boss') {
+    const elapsed = BOSS_SECONDS - (state._bossTimeLeft || 0);
+    const m = Math.floor(elapsed / 60), s = elapsed % 60;
+    extraVal.textContent = m + ':' + String(s).padStart(2,'0');
+    extraLbl.textContent = 'Time Used';
+  } else if (state.mode === 'weakspots') {
+    extraVal.textContent = state.weakIds.length;
+    extraLbl.textContent = 'Still Weak';
+  } else {
+    extraVal.textContent = state.maxStreak;
+    extraLbl.textContent = 'Best Streak';
+  }
+
+  document.getElementById('r-xp').textContent = '+' + xpEarned + ' XP';
+
+  showScreen('results');
+
+  setTimeout(() => {
+    checkLevelUp(oldXP, state.xp, xpEarned, () => {});
+  }, 600);
+}
+
+/* ════════════════════════════════════════
+   PLAY AGAIN
+════════════════════════════════════════ */
+function playAgain() {
+  startMode(state.mode);
+}
+
+/* ════════════════════════════════════════
+   BOOT
+════════════════════════════════════════ */
+(function init() {
+  loadProgress();
+  updateHomeXP();
+
+  // Show install tip only if not previously dismissed
+  try {
+    if (localStorage.getItem('dm5000_tip') === 'done') {
+      document.getElementById('install-tip').classList.add('hidden');
+    }
+  } catch(e) {}
+})();
+
+function dismissInstallTip() {
+  document.getElementById('install-tip').classList.add('hidden');
+  try { localStorage.setItem('dm5000_tip', 'done'); } catch(e) {}
+}
+</script>
+</body>
+</html>
