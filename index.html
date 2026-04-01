@@ -118,6 +118,8 @@ body{
 .t-blue .mode-badge{background:rgba(59,130,246,.15);color:#93C5FD}
 .t-purple .mode-accent{background:#A855F7}
 .t-purple .mode-badge{background:rgba(168,85,247,.15);color:#D8B4FE}
+.t-teal .mode-accent{background:#0EA5E9}
+.t-teal .mode-badge{background:rgba(14,165,233,.15);color:#7DD3FC}
 
 /* ══════════════════════════════════════════
    GAME SCREEN
@@ -425,6 +427,20 @@ body{
 }
 .btn-reset:hover{border-color:var(--wrong);color:var(--wrong)}
 
+/* ══════════════════════════════════════════
+   STUDY SCREEN (v2 — The On-Ramp)
+══════════════════════════════════════════ */
+#study{background:var(--bg2)}
+.study-topbar{
+  padding:14px 16px 12px;display:flex;align-items:center;gap:12px;
+  border-bottom:1px solid var(--border);background:var(--surf);flex-shrink:0;
+}
+.study-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:#7DD3FC;flex:1}
+.study-body{flex:1;padding:32px 20px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.study-placeholder-icon{font-size:64px;margin-bottom:16px}
+.study-placeholder-title{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:2px;color:#7DD3FC;margin-bottom:10px}
+.study-placeholder-text{font-size:14px;color:var(--dim);line-height:1.65;max-width:280px}
+
 /* ── TOAST NOTIFICATION ── */
 #toast{
   position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);
@@ -467,6 +483,15 @@ body{
   <div class="sec-hd"><span class="sec-hd-txt">Choose Your Mode</span><div class="sec-hd-line"></div></div>
 
   <div class="mode-list">
+    <!-- The On-Ramp: Study Guide — START HERE (v2) -->
+    <div class="mode-card t-teal" onclick="openStudyGuide()">
+      <div class="mode-accent"></div><div class="mode-icon">📖</div>
+      <div class="mode-copy">
+        <div class="mode-name">The On-Ramp</div>
+        <div class="mode-desc">Your Driving Test Study Guide · Start here!</div>
+        <span class="mode-badge">9 chapters · +25 XP each</span>
+      </div><div class="mode-arr">›</div>
+    </div>
     <div class="mode-card t-red"    onclick="startMode('classic')">
       <div class="mode-accent"></div><div class="mode-icon">📋</div>
       <div class="mode-copy">
@@ -506,18 +531,6 @@ body{
         <div class="mode-desc">35 questions · 8-minute countdown clock</div>
         <span class="mode-badge">Final challenge</span>
       </div><div class="mode-arr">›</div>
-    </div>
-
-    <!-- v2: The On-Ramp Study Guide -->
-    <div class="mode-card locked" onclick="showToast('📖 The On-Ramp is coming in v2!')">
-      <div class="mode-accent" style="background:var(--dim)"></div>
-      <div class="mode-icon">📖</div>
-      <div class="mode-copy">
-        <div class="mode-name" style="color:var(--dim)">The On-Ramp</div>
-        <div class="mode-desc">Your Driving Test Study Guide · Rules, signs &amp; key laws</div>
-        <span class="coming-pill">Coming in v2</span>
-      </div>
-      <div class="mode-arr">🔒</div>
     </div>
   </div>
 
@@ -621,6 +634,21 @@ body{
       <button class="btn-primary"   id="r-play-again" onclick="playAgain()">PLAY AGAIN</button>
       <button class="btn-secondary" onclick="goHome()">HOME BASE</button>
     </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     STUDY — THE ON-RAMP (v2)
+═══════════════════════════════════════ -->
+<div id="study" class="screen">
+  <div class="study-topbar">
+    <button class="btn-back" onclick="goHome()">‹</button>
+    <div class="study-title">THE ON-RAMP</div>
+  </div>
+  <div class="study-body">
+    <div class="study-placeholder-icon">📖</div>
+    <div class="study-placeholder-title">CHAPTERS LOADING</div>
+    <div class="study-placeholder-text">Step 1 scaffold confirmed — chapter content coming in Step 3!</div>
   </div>
 </div>
 
@@ -806,13 +834,14 @@ let state = {
   totalRight:    0,
   totalAnswered: 0,
   weakIds:       [],
-  sessions:      0    // total sessions played (for future study guide hook)
+  sessions:      0,    // total sessions played
+  chaptersRead:  []    // v2: array of chapter indices (0–8) read at least once
 };
 
 /* ════════════════════════════════════════
    LOCALSTORAGE  — robust persistence
 ════════════════════════════════════════ */
-const SAVE_KEY = 'dm5000_v1';  // versioned key so future changes don't break saves
+const SAVE_KEY = 'dm5000_v2';  // versioned key — v2 adds chaptersRead[]
 
 function saveProgress() {
   const save = {
@@ -821,7 +850,8 @@ function saveProgress() {
     totalRight:    state.totalRight,
     totalAnswered: state.totalAnswered,
     weakIds:       state.weakIds,
-    sessions:      state.sessions
+    sessions:      state.sessions,
+    chaptersRead:  state.chaptersRead
   };
   try {
     localStorage.setItem(SAVE_KEY, JSON.stringify(save));
@@ -842,6 +872,7 @@ function loadProgress() {
     state.totalAnswered = (typeof save.totalAnswered === 'number'  && save.totalAnswered >= 0)? save.totalAnswered : 0;
     state.weakIds       = Array.isArray(save.weakIds)                                         ? save.weakIds       : [];
     state.sessions      = (typeof save.sessions === 'number'       && save.sessions >= 0)     ? save.sessions      : 0;
+    state.chaptersRead  = Array.isArray(save.chaptersRead)                                    ? save.chaptersRead  : [];
   } catch (e) {
     // Corrupted save — start fresh
   }
@@ -851,6 +882,7 @@ function resetProgress() {
   try { localStorage.removeItem(SAVE_KEY); } catch(e) {}
   state.xp = 0; state.bestStreak = 0; state.totalRight = 0;
   state.totalAnswered = 0; state.weakIds = []; state.sessions = 0;
+  state.chaptersRead = [];
   updateHomeXP();
   showToast('🔄 Progress reset — starting fresh!');
 }
@@ -1015,6 +1047,13 @@ function goHome() {
   loadProgress();
   updateHomeXP();
   showScreen('home');
+}
+
+/* ════════════════════════════════════════
+   THE ON-RAMP — STUDY GUIDE NAVIGATION
+════════════════════════════════════════ */
+function openStudyGuide() {
+  showScreen('study');
 }
 
 /* ════════════════════════════════════════
