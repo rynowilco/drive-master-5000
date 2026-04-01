@@ -503,6 +503,70 @@ body{
 .ch-status{flex-shrink:0;padding-right:4px;font-size:20px;color:var(--faint)}
 .chapter-card.ch-done .ch-status{color:var(--correct)}
 
+/* ══════════════════════════════════════════
+   CHAPTER VIEWER SCREEN (v2 — The On-Ramp)
+══════════════════════════════════════════ */
+#chapter{background:var(--bg2)}
+.chapter-topbar{
+  padding:14px 16px 12px;display:flex;align-items:center;gap:12px;
+  border-bottom:1px solid var(--border);background:var(--surf);flex-shrink:0;
+}
+.ch-topbar-meta{flex:1;min-width:0}
+.ch-topbar-num{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:#7DD3FC}
+.ch-topbar-title{
+  font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1.5px;
+  color:var(--text);line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.chapter-scroll{flex:1;overflow-y:auto;padding-bottom:40px}
+
+/* ── Content block types ── */
+.cb-text{
+  font-size:14.5px;line-height:1.75;color:var(--text);
+  padding:10px 20px 4px;font-weight:400;
+}
+.cb-heading{
+  font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;
+  color:#7DD3FC;padding:20px 20px 0;
+  border-bottom:1px solid rgba(14,165,233,.18);margin:0 20px 6px;
+}
+.cb-callout{
+  margin:6px 20px 0;padding:11px 14px;border-radius:var(--rsm);
+  background:rgba(179,153,93,.1);border:1px solid rgba(179,153,93,.25);
+  font-size:13.5px;line-height:1.55;color:var(--gold-lt);font-weight:500;
+}
+.cb-sign-wrap{
+  display:flex;justify-content:center;align-items:flex-end;
+  gap:20px;flex-wrap:wrap;padding:16px 20px 4px;
+}
+.cb-sign-item{display:flex;flex-direction:column;align-items:center;gap:6px}
+.cb-sign-label{
+  font-size:10px;font-weight:700;text-transform:uppercase;
+  letter-spacing:1px;color:var(--dim);text-align:center;max-width:80px;
+}
+
+/* ── Chapter footer ── */
+.chapter-footer{margin:28px 20px 20px;display:flex;flex-direction:column;gap:10px}
+.btn-chapter-read{
+  width:100%;background:linear-gradient(135deg,#0EA5E9 0%,#0284C7 100%);border:none;
+  border-radius:var(--r);padding:16px;color:#fff;font-family:'Bebas Neue',sans-serif;
+  font-size:22px;letter-spacing:3px;cursor:pointer;
+  transition:transform .12s,box-shadow .12s;
+  box-shadow:0 4px 20px rgba(14,165,233,.3);
+}
+.btn-chapter-read:active{transform:scale(0.98)}
+.btn-chapter-read.ch-read-done{
+  background:linear-gradient(135deg,rgba(34,197,94,.15),rgba(34,197,94,.08));
+  border:1px solid rgba(34,197,94,.4);color:#86EFAC;
+  box-shadow:none;cursor:default;transform:none;font-size:19px;
+}
+.btn-chapter-back{
+  width:100%;background:var(--surf);border:1px solid var(--border-lt);border-radius:var(--r);
+  padding:14px;color:var(--dim);font-family:'Bebas Neue',sans-serif;font-size:19px;
+  letter-spacing:2.5px;cursor:pointer;transition:transform .12s,border-color .12s,color .12s;
+}
+.btn-chapter-back:hover{border-color:rgba(14,165,233,.4);color:#7DD3FC}
+.btn-chapter-back:active{transform:scale(0.98)}
+
 /* ── TOAST NOTIFICATION ── */
 #toast{
   position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);
@@ -732,6 +796,28 @@ body{
 </div>
 
 <!-- ═══════════════════════════════════════
+     CHAPTER — THE ON-RAMP VIEWER (v2)
+═══════════════════════════════════════ -->
+<div id="chapter" class="screen">
+  <div class="chapter-topbar">
+    <button class="btn-back" onclick="closeChapter()">‹</button>
+    <div class="ch-topbar-meta">
+      <div class="ch-topbar-num"   id="ch-topbar-num">Chapter 1</div>
+      <div class="ch-topbar-title" id="ch-topbar-title">Road Signs 101</div>
+    </div>
+  </div>
+  <div class="chapter-scroll">
+    <div id="chapter-content"></div>
+    <div class="chapter-footer">
+      <button class="btn-chapter-read" id="btn-chapter-read" onclick="markChapterRead()">
+        ✅ MARK AS READ · +25 XP
+      </button>
+      <button class="btn-chapter-back" onclick="closeChapter()">← BACK TO CHAPTERS</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
      LEVEL-UP OVERLAY
 ═══════════════════════════════════════ -->
 <div id="levelup-overlay" class="hide">
@@ -933,6 +1019,186 @@ const CHAPTERS = [
     desc: 'Seat belts, impaired driving laws & hazard handling',
     xp: 25
   }
+];
+
+/* ════════════════════════════════════════
+   CHAPTER CONTENT DATA (The On-Ramp)
+   Each chapter = array of block objects
+   Block types: text | heading | callout | signs
+════════════════════════════════════════ */
+const CHAPTER_CONTENT = [
+
+/* ── 0: Road Signs 101 ── */
+[
+  {t:'text',    v:"Signs use shape AND color so you can ID them at speed, at night, or when they're partially covered. Shape alone tells you the category before you read a word."},
+  {t:'heading', v:'Sign Shapes'},
+  {t:'callout', v:'🛑 Octagon = STOP — the only 8-sided sign on the road'},
+  {t:'callout', v:'▽ Downward Triangle = YIELD — red border, white center'},
+  {t:'callout', v:'⬡ Pentagon (5 sides) = School Zone — watch for children'},
+  {t:'callout', v:'◇ Diamond = WARNING — yellow background, hazard ahead'},
+  {t:'callout', v:'⊘ Circle = Railroad Crossing advance warning'},
+  {t:'signs',   v:['stop','yield','school','railroad']},
+  {t:'heading', v:'Sign Colors'},
+  {t:'callout', v:'⬜ White + Black = Regulatory — rules you must follow'},
+  {t:'callout', v:'🟡 Yellow = Warning — slow down, something ahead'},
+  {t:'callout', v:'🟠 Orange = Work Zone — fines are DOUBLED for all violations'},
+  {t:'callout', v:'🟢 Green = Guide signs — exits, distances, directions'},
+  {t:'callout', v:'🔵 Blue = Motorist services — gas, food, lodging, hospital'},
+  {t:'callout', v:'🟤 Brown = Parks, historic sites, recreation areas'},
+  {t:'heading', v:'Key Rules to Know'},
+  {t:'text',    v:"A red circle with a diagonal slash means whatever is shown is PROHIBITED. No left turn, no right turn, no U-turn — red slash = don't do it."},
+  {t:'callout', v:'🚫 Red circle + diagonal slash = PROHIBITED. Do not do what it shows.'},
+  {t:'signs',   v:['donotenter','warning','speedlimit']},
+  {t:'text',    v:"A No Turn on Red sign overrides the normal right-on-red rule. If you see one posted, wait for green — no exceptions."},
+],
+
+/* ── 1: Traffic Signals ── */
+[
+  {t:'text',    v:"Oregon tests signal knowledge hard — especially flashing lights and arrows. Don't just know red and green. Know all of them."},
+  {t:'heading', v:'Steady Signals'},
+  {t:'callout', v:'🟢 Steady Green = Go — but YIELD on left turns. Oncoming traffic has a green too.'},
+  {t:'callout', v:'🟡 Steady Yellow = STOP if you safely can. Already too close to stop? Proceed carefully.'},
+  {t:'callout', v:'🔴 Steady Red = Full stop. Right on red OK after stopping and yielding — unless a sign says No Turn on Red.'},
+  {t:'callout', v:'🔴 Left on Red = ONLY from a one-way road onto another one-way road. Stop and yield first.'},
+  {t:'heading', v:'Flashing Signals'},
+  {t:'callout', v:'🔴 Flashing Red = Treat exactly like a STOP SIGN. Stop, then go when safe.'},
+  {t:'callout', v:'🟡 Flashing Yellow = Slow down and proceed with CAUTION. Not a stop.'},
+  {t:'callout', v:'🟡 Flashing Yellow Arrow = You MAY turn — but YIELD to oncoming traffic and pedestrians first.'},
+  {t:'heading', v:'Dark / Off Signal'},
+  {t:'callout', v:'⚫ Dark signal (power out) = Treat as a 4-way STOP in all directions.'},
+  {t:'text',    v:"Power outages can knock signals dark. Don't assume right-of-way. Every direction stops and takes turns."},
+],
+
+/* ── 2: Speed Laws ── */
+[
+  {t:'text',    v:"Oregon's Basic Rule: never drive faster than is safe for current conditions — even if you're under the speed limit. Posted limits show the max for ideal conditions only."},
+  {t:'heading', v:'Default Limits (No Posted Sign)'},
+  {t:'callout', v:'🏙️ Alley = 15 mph'},
+  {t:'callout', v:'🏪 Business district = 20 mph'},
+  {t:'callout', v:'🏫 School zone (when school is in session) = 20 mph'},
+  {t:'callout', v:'🏠 Residential area = 25 mph'},
+  {t:'callout', v:'🛣️ Highway / rural road = 55 mph'},
+  {t:'heading', v:'When to Go Slower'},
+  {t:'text',    v:"Rain, fog, ice, curves, heavy traffic, poor visibility — these all require dropping below the posted limit. The Basic Rule is always in effect. You can be cited for unsafe speed even while doing the posted limit."},
+  {t:'callout', v:'⚠️ Work zones: ALL fines are DOUBLED. Speed through one and the ticket gets expensive fast.'},
+  {t:'callout', v:"❄️ Snow or ice going uphill: use just enough power to keep moving. Over-accelerating causes wheel spin and loss of control."},
+],
+
+/* ── 3: Lane Rules & Pavement Markings ── */
+[
+  {t:'text',    v:"Pavement markings tell you what you can and cannot do without needing a sign. Master yellow vs. white and you will cover most situations."},
+  {t:'heading', v:'Yellow Lines = Opposite Directions of Travel'},
+  {t:'callout', v:'📏 Broken yellow = may pass if safe and the road ahead is clear'},
+  {t:'callout', v:'📏 Solid yellow on your side = NO passing from your side'},
+  {t:'callout', v:'📏 Double solid yellow = no passing either direction — but you MAY still turn across them to enter or exit a road or driveway'},
+  {t:'heading', v:'White Lines = Same Direction of Travel'},
+  {t:'callout', v:'📏 Broken white = may change lanes when safe'},
+  {t:'callout', v:'📏 Solid white = stay in your lane'},
+  {t:'callout', v:'📏 Solid white edge line = marks the right edge of the road'},
+  {t:'heading', v:'Special Lanes'},
+  {t:'callout', v:'♦️ HOV / Carpool lanes: marked with a diamond — minimum 2 people in vehicle unless posted otherwise'},
+  {t:'callout', v:'🚲 Bike lanes: marked with white bicycle symbol — never drive or park in them'},
+  {t:'heading', v:'Freeway Driving'},
+  {t:'text',    v:"Accelerate to match freeway traffic speed on the on-ramp before merging — don't stop at the end unless you absolutely must. Once on the freeway, weaving between lanes raises crash risk significantly."},
+],
+
+/* ── 4: Space Cushion & Following Distance ── */
+[
+  {t:'text',    v:"Tailgating is one of the most common causes of rear-end crashes. The 2-4 second rule gives you a quick way to check your gap at any speed."},
+  {t:'heading', v:'The 2-4 Second Rule'},
+  {t:'text',    v:"Pick a fixed object ahead: a sign, overpass, or shadow on the road. When the car in front passes it, start counting. If you pass it before 'two Mississippi,' you are too close."},
+  {t:'callout', v:'⏱️ Dry, good conditions = at least 2 seconds minimum'},
+  {t:'callout', v:'🌧️ Rain, fog, night, or following a large truck = 4+ seconds'},
+  {t:'callout', v:'🧊 Ice or snow = double or triple your normal gap'},
+  {t:'heading', v:'Stopping Distance'},
+  {t:'text',    v:"Stopping distance = reaction time + braking distance. At 55 mph, your car travels roughly 60 feet during the 3/4 second it takes just to react — before the brakes even engage."},
+  {t:'callout', v:'🚗 At 55 mph: total stopping distance is roughly 300 feet — longer than a football field.'},
+  {t:'heading', v:'Backing Up'},
+  {t:'callout', v:'↩️ To back up safely: turn your body and head to look out through the rear window in BOTH directions. Mirrors and backup cameras alone are not enough.'},
+],
+
+/* ── 5: Turns & Intersections ── */
+[
+  {t:'text',    v:"Intersection and turn rules are among the most-tested topics on the permit exam. Know turn technique, right-of-way rules, and roundabouts cold."},
+  {t:'heading', v:'Turn Signals'},
+  {t:'callout', v:'📢 Signal at least 100 feet before your turn'},
+  {t:'heading', v:'Right Turns'},
+  {t:'callout', v:'➡️ Approach close to the right curb or edge. Finish in the right lane. Do NOT swing wide to the left first.'},
+  {t:'heading', v:'Left Turns'},
+  {t:'callout', v:'⬅️ Start from the leftmost through lane. Finish in the leftmost available lane.'},
+  {t:'heading', v:'Turning on Red'},
+  {t:'callout', v:'🔴 Right on Red: full stop first, yield to all traffic and pedestrians, then turn if clear.'},
+  {t:'callout', v:'🔴 Left on Red: ONLY from a one-way road onto another one-way road. Full stop and yield first.'},
+  {t:'heading', v:'Right-of-Way at Uncontrolled Intersections'},
+  {t:'callout', v:'🚗 Yield to any vehicle already in the intersection'},
+  {t:'callout', v:'🚗 Arriving at the same time? Yield to the vehicle on your RIGHT'},
+  {t:'callout', v:'T-intersection: traffic on the THROUGH road always has right-of-way over the road that ends'},
+  {t:'heading', v:'Roundabouts'},
+  {t:'text',    v:"Yield to traffic already in the circle. Enter when clear, travel counterclockwise, and signal right when approaching your exit."},
+  {t:'callout', v:'🔄 Roundabout order: Yield at entry → Enter → Travel counterclockwise → Signal right → Exit'},
+],
+
+/* ── 6: Sharing the Road ── */
+[
+  {t:'heading', v:'Pedestrians'},
+  {t:'callout', v:'🚶 Stop for pedestrians in ANY crosswalk — marked OR unmarked. An unmarked crosswalk exists at every intersection.'},
+  {t:'callout', v:'🚶 When someone steps into a crosswalk, ALL lanes of traffic must stop — not just the nearest lane.'},
+  {t:'heading', v:'Cyclists'},
+  {t:'callout', v:'🚲 Under 35 mph: pass cyclists with at least 3 feet of clearance'},
+  {t:'callout', v:'🚲 Over 35 mph: leave enough space that if the cyclist fell sideways, you would not hit them'},
+  {t:'callout', v:'🚲 Cyclists are entitled to a full lane. Never try to share a lane side-by-side with a cyclist.'},
+  {t:'heading', v:'School Buses'},
+  {t:'callout', v:'🚌 Flashing RED lights on a school bus = ALL traffic in BOTH directions must STOP'},
+  {t:'callout', v:'🚌 Exception: on a 4+ lane divided highway, traffic on the OPPOSITE side of the divider may continue'},
+  {t:'heading', v:'Emergency Vehicles'},
+  {t:'callout', v:'🚨 Lights and siren on = pull to the RIGHT and STOP. Stay stopped until they pass.'},
+  {t:'heading', v:'Large Trucks'},
+  {t:'text',    v:"Trucks have large blind spots on all four sides. If you cannot see the driver in the truck's mirror, they cannot see you. Trucks also need far more distance to stop — never cut in front of one."},
+  {t:'heading', v:'Public Transit Buses'},
+  {t:'callout', v:'🚍 Yield to a bus re-entering traffic when it has its TURN SIGNAL and flashing YIELD SIGN both activated.'},
+],
+
+/* ── 7: Parking Rules ── */
+[
+  {t:'heading', v:'Parallel Parking'},
+  {t:'callout', v:'🅿️ Park within 12 inches of the curb when parallel parking'},
+  {t:'heading', v:'Parking on Hills'},
+  {t:'text',    v:"Always set your parking brake on a hill. The wheel direction is a backup in case the brake fails."},
+  {t:'callout', v:'⬆️ Uphill WITH a curb: turn wheels AWAY from the curb (toward the traffic lane)'},
+  {t:'callout', v:'⬇️ Downhill WITH a curb: turn wheels TOWARD the curb'},
+  {t:'callout', v:'↕️ No curb (either direction): turn wheels TOWARD the edge of the road'},
+  {t:'heading', v:'No-Parking Zones'},
+  {t:'callout', v:'🚒 Within 10 feet of a fire hydrant — NO parking'},
+  {t:'callout', v:'🚶 Within 20 feet of a crosswalk at an intersection — NO parking'},
+  {t:'callout', v:'🚒 Within 15 feet of a fire station driveway (same side of street) — NO parking'},
+  {t:'callout', v:'🚒 Within 75 feet of a fire station (opposite side of street) — NO parking'},
+  {t:'callout', v:'🚲 Bike lanes — NEVER park in a bike lane'},
+  {t:'callout', v:'♿ Disabled parking without a valid permit: minimum $165 fine, up to $1,000'},
+],
+
+/* ── 8: Safe & Responsible Driving ── */
+[
+  {t:'heading', v:'Safety Belts'},
+  {t:'callout', v:'🪢 Oregon law: ALL drivers and passengers in ALL seats must wear a safety belt'},
+  {t:'callout', v:'👶 Children must use an approved car seat until age 8 OR at least 4 feet 9 inches tall'},
+  {t:'callout', v:'👶 Infants must ride REAR-FACING until age 2'},
+  {t:'heading', v:'Cell Phone Laws'},
+  {t:'callout', v:'📵 Under 18: NO mobile device use while driving — zero exceptions, no hands-free workaround'},
+  {t:'callout', v:'📱 Age 18+: hands-free device only. One finger to activate or deactivate is permitted.'},
+  {t:'heading', v:'Impaired Driving'},
+  {t:'callout', v:'🍺 Legal BAC limit: 0.08% for drivers 21 and older'},
+  {t:'callout', v:'🚫 Under 21: ZERO TOLERANCE — any detectable alcohol in system = fail'},
+  {t:'callout', v:'⚖️ Implied Consent: by driving, you have agreed to take a breath, blood, or urine test when asked by police'},
+  {t:'callout', v:'🍺 Open Container law: no open alcohol containers anywhere in the vehicle — must be in the trunk'},
+  {t:'heading', v:'Lights & Hazardous Conditions'},
+  {t:'callout', v:'💡 Dim high beams within 500 ft of oncoming traffic; within 350 ft when following another vehicle'},
+  {t:'callout', v:'🌧️ Rain, fog, or low visibility: turn headlights ON — not just parking lights'},
+  {t:'heading', v:'Skidding'},
+  {t:'text',    v:"Stay OFF the brakes — until speed drops, braking will not help. Steer in the direction you WANT to go. As the car straightens out, ease the wheel back."},
+  {t:'heading', v:'Collision Avoidance'},
+  {t:'callout', v:'⚠️ Three tools: STOP quickly · TURN quickly (often faster than stopping) · SPEED UP if there is open space ahead'},
+],
+
 ];
 </script>
 
@@ -1236,9 +1502,98 @@ function renderStudySelect() {
   });
 }
 
-// Placeholder — will be replaced in Step 3 with full chapter content
 function openChapter(id) {
-  showToast('📖 Chapter content coming in Step 3!');
+  state._chapterId = id;
+  const ch     = CHAPTERS[id];
+  const blocks = CHAPTER_CONTENT[id];
+  const isRead = state.chaptersRead.includes(id);
+
+  // Populate top bar
+  document.getElementById('ch-topbar-num').textContent   = 'Chapter ' + (id + 1) + ' of ' + CHAPTERS.length;
+  document.getElementById('ch-topbar-title').textContent = ch.name;
+
+  // Build content blocks
+  const container = document.getElementById('chapter-content');
+  container.innerHTML = '';
+
+  blocks.forEach(function(block) {
+    if (block.t === 'heading') {
+      const el = document.createElement('div');
+      el.className = 'cb-heading';
+      el.textContent = block.v;
+      container.appendChild(el);
+
+    } else if (block.t === 'text') {
+      const el = document.createElement('div');
+      el.className = 'cb-text';
+      el.textContent = block.v;
+      container.appendChild(el);
+
+    } else if (block.t === 'callout') {
+      const el = document.createElement('div');
+      el.className = 'cb-callout';
+      el.textContent = block.v;
+      container.appendChild(el);
+
+    } else if (block.t === 'signs') {
+      const wrap = document.createElement('div');
+      wrap.className = 'cb-sign-wrap';
+      block.v.forEach(function(key) {
+        if (SIGNS[key]) {
+          const item = document.createElement('div');
+          item.className = 'cb-sign-item';
+          item.innerHTML = SIGNS[key] +
+            '<div class="cb-sign-label">' + key.toUpperCase() + '</div>';
+          wrap.appendChild(item);
+        }
+      });
+      container.appendChild(wrap);
+    }
+  });
+
+  // Update Mark as Read button
+  const btn = document.getElementById('btn-chapter-read');
+  if (isRead) {
+    btn.textContent = '\u2705 CHAPTER COMPLETE!';
+    btn.classList.add('ch-read-done');
+    btn.onclick = null;
+  } else {
+    btn.textContent = '\u2705 MARK AS READ \u00B7 +25 XP';
+    btn.classList.remove('ch-read-done');
+    btn.onclick = markChapterRead;
+  }
+
+  showScreen('chapter');
+  document.querySelector('.chapter-scroll').scrollTop = 0;
+}
+
+function closeChapter() {
+  openStudyGuide();
+}
+
+function markChapterRead() {
+  const id = state._chapterId;
+  if (id === null || id === undefined) return;
+  if (state.chaptersRead.includes(id)) return; // no double XP
+
+  const oldXP  = state.xp;
+  const xpGain = CHAPTERS[id].xp;
+
+  state.chaptersRead.push(id);
+  state.xp += xpGain;
+  saveProgress();
+
+  // Immediately update button
+  const btn = document.getElementById('btn-chapter-read');
+  btn.textContent = '\u2705 CHAPTER COMPLETE!';
+  btn.classList.add('ch-read-done');
+  btn.onclick = null;
+
+  showToast('\ud83d\udcd6 Chapter read! +' + xpGain + ' XP earned!');
+
+  setTimeout(function() {
+    checkLevelUp(oldXP, state.xp, xpGain, function() {});
+  }, 400);
 }
 
 /* ════════════════════════════════════════
