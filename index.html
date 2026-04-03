@@ -852,23 +852,23 @@ body{
 ═══════════════════════════════════════ -->
 <script>
 const QUESTIONS = [
-  {id:1,cat:"Signs",tags:["sign","regulatory"],sign:"stop",q:"A stop sign is what shape and color?",opts:["Red octagon","Red triangle","White rectangle with red border"],ans:0,exp:"Stop signs are always red octagons (8 sides). The unique shape lets drivers recognize them even when covered in snow or otherwise hard to read.",ref:"Signs & Traffic Signals – Regulatory Signs, p.7"},
+  {id:1,cat:"Signs",tags:["sign","regulatory"],sign:"stop",hideSign:true,q:"A stop sign is what shape and color?",opts:["Red octagon","Red triangle","White rectangle with red border"],ans:0,exp:"Stop signs are always red octagons (8 sides). The unique shape lets drivers recognize them even when covered in snow or otherwise hard to read.",ref:"Signs & Traffic Signals – Regulatory Signs, p.7"},
   {id:2,cat:"Signs",tags:["sign","regulatory"],sign:"stop",q:"When you reach a stop sign, you must:",opts:["Slow down and proceed if no traffic is visible","Come to a complete stop, then yield before proceeding","Stop only if another vehicle is already in the intersection"],ans:1,exp:"You must come to a complete stop at a stop sign. Yield to other vehicles and remain stopped for pedestrians in marked or unmarked crosswalks. When it is safe, you may enter the intersection.",ref:"Signs & Traffic Signals – Regulatory Signs, p.7"},
-  {id:3,cat:"Signs",tags:["sign","regulatory"],sign:"yield",q:"A yield sign is what shape?",opts:["Yellow diamond","Red and white downward-pointing triangle","White pentagon"],ans:1,exp:"Yield signs are downward-pointing triangles with a red border and white center. Reduce speed and give the right of way — stop if needed.",ref:"Signs & Traffic Signals – Regulatory Signs, p.7"},
+  {id:3,cat:"Signs",tags:["sign","regulatory"],sign:"yield",hideSign:true,q:"A yield sign is what shape?",opts:["Yellow diamond","Red and white downward-pointing triangle","White pentagon"],ans:1,exp:"Yield signs are downward-pointing triangles with a red border and white center. Reduce speed and give the right of way — stop if needed.",ref:"Signs & Traffic Signals – Regulatory Signs, p.7"},
   {id:4,cat:"Signs",tags:["sign","regulatory"],sign:"donotenter",q:"You see a 'Do Not Enter' sign. This means:",opts:["The road ahead is under construction","You are going the wrong way and must not enter this road","Trucks and large vehicles are prohibited"],ans:1,exp:"The Do Not Enter sign warns you not to enter a road or freeway. You will see it if you are going the wrong way.",ref:"Signs & Traffic Signals – Regulatory Signs, p.7"},
   {id:5,cat:"Signs",tags:["sign","regulatory"],q:"A sign with a red circle and diagonal slash over a left-arrow means:",opts:["Left turns are allowed only on a green arrow","No left turn is permitted here","Left lane must turn left"],ans:1,exp:"When you see a sign with a red circle and a slash mark, it means do not make the turn shown.",ref:"Signs & Traffic Signals – Regulatory Signs, p.7"},
   {id:6,cat:"Signs",tags:["sign","regulatory"],sign:"speedlimit",q:"A Speed Limit sign shows:",opts:["The recommended speed for ideal conditions","The minimum speed you must maintain","The maximum speed considered safe under ideal driving conditions"],ans:2,exp:"A speed limit sign shows the maximum speed considered safe under ideal conditions. You must also drive slower if conditions require it.",ref:"Speed Regulations, p.19"},
   {id:7,cat:"Signs",tags:["sign","regulatory"],q:"Regulatory signs (speed limits, lane-use) have what standard appearance?",opts:["Yellow diamond with black symbols","White rectangle with black text or symbols","Green rectangle with white text"],ans:1,exp:"Regulatory signs are rectangular with black words or symbols on a white background. They are posted at or near where the requirement applies.",ref:"Signs & Traffic Signals – Regulatory Signs, p.8"},
   {id:8,cat:"Signs",tags:["sign","regulatory"],q:"A 'No Turn on Red' sign means:",opts:["You may turn right on red after stopping","You may not turn during a red light — wait for green","No turns are allowed at this intersection at any time"],ans:1,exp:"A No Turn on Red sign overrides the usual rule permitting right turns on red. You must wait for the signal to turn green before turning.",ref:"Signs & Traffic Signals – Regulatory Signs, p.9"},
-  {id:9,cat:"Signs",tags:["sign","warning"],sign:"warning",q:"Warning signs in Oregon are what color and shape?",opts:["Orange rectangle","Yellow diamond","White rectangle with red border"],ans:1,exp:"Warning signs are yellow diamonds. They alert you to known hazards or changes in road conditions ahead.",ref:"Signs & Traffic Signals – Warning Signs, p.10"},
-  {id:10,cat:"Signs",tags:["sign","warning"],sign:"slippery",q:"A yellow diamond sign with a skidding car symbol means:",opts:["Winding road ahead","Slippery when wet — pavement is unusually slick in rain","Reduce speed — steep hill ahead"],ans:1,exp:"The Slippery When Wet warning sign indicates the pavement is unusually slick when wet. Slow down and increase following distance.",ref:"Signs & Traffic Signals – Warning Signs, p.12"},
+  {id:9,cat:"Signs",tags:["sign","warning"],sign:"warning",hideSign:true,q:"Warning signs in Oregon are what color and shape?",opts:["Orange rectangle","Yellow diamond","White rectangle with red border"],ans:1,exp:"Warning signs are yellow diamonds. They alert you to known hazards or changes in road conditions ahead.",ref:"Signs & Traffic Signals – Warning Signs, p.10"},
+  {id:10,cat:"Signs",tags:["sign","warning"],sign:"slippery",hideSign:true,q:"A yellow diamond sign with a skidding car symbol means:",opts:["Winding road ahead","Slippery when wet — pavement is unusually slick in rain","Reduce speed — steep hill ahead"],ans:1,exp:"The Slippery When Wet warning sign indicates the pavement is unusually slick when wet. Slow down and increase following distance.",ref:"Signs & Traffic Signals – Warning Signs, p.12"},
   {id:11,cat:"Signs",tags:["sign","warning"],q:"A 'Stop Ahead' warning sign tells you:",opts:["There is a stop sign coming — slow down and prepare to stop","Emergency vehicles are stopped ahead","Road work requires you to stop and wait"],ans:0,exp:"The Stop Ahead warning sign alerts you that a stop sign is coming. Slow down early so you can stop smoothly.",ref:"Signs & Traffic Signals – Warning Signs, p.11"},
   {id:12,cat:"Signs",tags:["sign","warning"],q:"A yellow pedestrian crossing sign with a flashing beacon means:",opts:["A pedestrian is crossing, has recently crossed, or is about to cross","School children are present","The crosswalk is closed for construction"],ans:0,exp:"The flashing beacon indicates a pedestrian is crossing, has recently crossed, or is about to cross. Be alert and ready to stop.",ref:"Signs & Traffic Signals – Warning Signs, p.10"},
   {id:13,cat:"Signs",tags:["sign"],q:"Green highway signs provide:",opts:["Warnings about construction zones","Exit information and directions to roads or cities","Motorist services like gas and food"],ans:1,exp:"Guide or information signs are green. They give exit information or show the direction of roads or cities.",ref:"Signs & Traffic Signals – Route, Guide, and Information Signs, p.13"},
   {id:14,cat:"Signs",tags:["sign"],q:"Blue highway signs indicate:",opts:["Route numbers and distances to cities","Recreational areas and parks","Motorist services — gas, food, lodging, hospitals, EV charging"],ans:2,exp:"Blue signs tell you about services along the highway: gas, food, lodging, rest areas, EV charging, accessible facilities, and hospitals.",ref:"Signs & Traffic Signals – Motorist Service Signs, p.14"},
   {id:15,cat:"Signs",tags:["sign"],q:"Brown highway signs point to:",opts:["Emergency services and detours","Historic, cultural, scenic, and recreational locations","School zones and crossing areas"],ans:1,exp:"Brown signs point to historic and cultural locations, as well as scenic areas, picnic grounds, and parks.",ref:"Signs & Traffic Signals – Historic, Cultural, and Recreational Signs, p.13"},
   {id:16,cat:"Signs",tags:["sign"],q:"Orange traffic signs and cones always mean:",opts:["Detour — follow signs to alternate route","Work zone — slow down, workers may be present","Emergency vehicles — pull to the right"],ans:1,exp:"Orange is used for work zone traffic control. Workers and construction equipment may be close to traffic. Fines are doubled in all work zones.",ref:"Work Zones, p.59"},
-  {id:17,cat:"Signs",tags:["sign"],sign:"school",q:"The five-sided (pentagon) sign marks the beginning of:",opts:["A hospital zone","A school zone or school crossing","A pedestrian mall"],ans:1,exp:"The pentagon-shaped sign marks the beginning of school zones and warns you about school crossings. Actively look for children and be ready to stop.",ref:"School Zones, p.49"},
+  {id:17,cat:"Signs",tags:["sign"],sign:"school",hideSign:true,q:"The five-sided (pentagon) sign marks the beginning of:",opts:["A hospital zone","A school zone or school crossing","A pedestrian mall"],ans:1,exp:"The pentagon-shaped sign marks the beginning of school zones and warns you about school crossings. Actively look for children and be ready to stop.",ref:"School Zones, p.49"},
   {id:18,cat:"Signs",tags:["sign"],sign:"railroad",q:"A yellow diamond with an 'X' and 'RR' symbols means:",opts:["No railroad service in this area","A railroad crossing is ahead","Railroad vehicles have the right of way at all times"],ans:1,exp:"The railroad advance warning sign tells you a railroad crossing is ahead. Look, listen, and slow down — you may have to stop.",ref:"Railroad Crossings, p.63"},
   {id:19,cat:"Signals",tags:["signal"],q:"A dark traffic signal (power outage) should be treated as:",opts:["A yield sign — slow and proceed if clear","A green light — traffic can flow normally","Stop signs in all directions"],ans:2,exp:"If a signal appears dark, stop as if there are stop signs in all directions. When it is safe, proceed.",ref:"Traffic Signals, p.15"},
   {id:20,cat:"Signals",tags:["signal"],q:"A flashing red traffic signal requires you to:",opts:["Slow down and proceed with caution","Treat it the same as a stop sign","Stop only if other traffic is present"],ans:1,exp:"A flashing red signal is treated the same as a stop sign — come to a complete stop, then proceed when safe.",ref:"Traffic Signals, p.15"},
@@ -956,14 +956,22 @@ const QUESTIONS = [
 
 /* ── Sign SVGs ── */
 const SIGNS = {
-  stop:`<svg width="88" height="88" viewBox="0 0 88 88"><polygon points="44,5 73,18 83,44 73,70 44,83 15,70 5,44 15,18" fill="#CC0000" stroke="white" stroke-width="3.5"/><text x="44" y="52" text-anchor="middle" fill="white" font-family="Arial Black,sans-serif" font-size="15" font-weight="900">STOP</text></svg>`,
-  yield:`<svg width="88" height="88" viewBox="0 0 88 88"><polygon points="44,10 80,74 8,74" fill="white" stroke="#CC0000" stroke-width="5"/><polygon points="44,22 71,68 17,68" fill="white" stroke="#CC0000" stroke-width="2.5"/><text x="44" y="62" text-anchor="middle" fill="#CC0000" font-family="Arial Black,sans-serif" font-size="11" font-weight="900">YIELD</text></svg>`,
-  donotenter:`<svg width="88" height="88" viewBox="0 0 88 88"><circle cx="44" cy="44" r="39" fill="#CC0000" stroke="white" stroke-width="3"/><rect x="14" y="36" width="60" height="16" fill="white" rx="2"/><text x="44" y="30" text-anchor="middle" fill="white" font-family="Arial,sans-serif" font-size="9" font-weight="bold">DO NOT</text><text x="44" y="67" text-anchor="middle" fill="white" font-family="Arial,sans-serif" font-size="9" font-weight="bold">ENTER</text></svg>`,
-  warning:`<svg width="88" height="88" viewBox="0 0 88 88"><polygon points="44,8 80,72 8,72" fill="#FFCC00" stroke="black" stroke-width="2.5"/><text x="44" y="56" text-anchor="middle" fill="black" font-family="Arial Black,sans-serif" font-size="24" font-weight="900">!</text></svg>`,
+  // Flat-top regular octagon — flat edges top/bottom/left/right, exactly like a real stop sign
+  stop:`<svg width="88" height="88" viewBox="0 0 88 88"><polygon points="29,9 59,9 79,30 79,59 59,79 29,79 9,59 9,30" fill="#CC0000" stroke="white" stroke-width="4"/><polygon points="33,14 55,14 74,33 74,55 55,74 33,74 14,55 14,33" fill="none" stroke="white" stroke-width="1.5"/><text x="44" y="53" text-anchor="middle" fill="white" font-family="Arial Black,sans-serif" font-size="16" font-weight="900">STOP</text></svg>`,
+  // Downward-pointing triangle — flat edge at top, point at bottom, double red border
+  yield:`<svg width="88" height="88" viewBox="0 0 88 88"><polygon points="7,14 81,14 44,79" fill="white" stroke="#CC0000" stroke-width="5"/><polygon points="16,20 72,20 44,68" fill="white" stroke="#CC0000" stroke-width="2"/><text x="44" y="50" text-anchor="middle" fill="#CC0000" font-family="Arial Black,sans-serif" font-size="11" font-weight="900">YIELD</text></svg>`,
+  // Red circle, full-width white bar centered, DO NOT ENTER in red on the bar
+  donotenter:`<svg width="88" height="88" viewBox="0 0 88 88"><circle cx="44" cy="44" r="39" fill="#CC0000" stroke="white" stroke-width="3"/><rect x="11" y="34" width="66" height="20" fill="white" rx="2"/><text x="44" y="44" text-anchor="middle" dominant-baseline="middle" fill="#CC0000" font-family="Arial Black,sans-serif" font-size="8.5" font-weight="900" letter-spacing="0.5">DO NOT ENTER</text></svg>`,
+  // Yellow diamond (rotated square) — the correct shape for Oregon warning signs
+  warning:`<svg width="88" height="88" viewBox="0 0 88 88"><polygon points="44,5 83,44 44,83 5,44" fill="#FFCC00" stroke="black" stroke-width="2.5"/><text x="44" y="57" text-anchor="middle" fill="black" font-family="Arial Black,sans-serif" font-size="30" font-weight="900">!</text></svg>`,
+  // White rectangle with SPEED / LIMIT / 55 — unchanged, was already correct
   speedlimit:`<svg width="72" height="90" viewBox="0 0 72 90"><rect x="3" y="3" width="66" height="84" fill="white" stroke="black" stroke-width="3" rx="4"/><text x="36" y="28" text-anchor="middle" fill="black" font-family="Arial,sans-serif" font-size="11" font-weight="bold">SPEED</text><text x="36" y="42" text-anchor="middle" fill="black" font-family="Arial,sans-serif" font-size="11" font-weight="bold">LIMIT</text><text x="36" y="76" text-anchor="middle" fill="black" font-family="Arial Black,sans-serif" font-size="34" font-weight="900">55</text></svg>`,
-  slippery:`<svg width="88" height="88" viewBox="0 0 88 88"><polygon points="44,8 80,72 8,72" fill="#FFCC00" stroke="black" stroke-width="2.5"/><text x="44" y="52" text-anchor="middle" fill="black" font-family="Arial,sans-serif" font-size="8.5">SLIPPERY</text><text x="44" y="64" text-anchor="middle" fill="black" font-family="Arial,sans-serif" font-size="8.5">WHEN WET</text></svg>`,
-  school:`<svg width="88" height="90" viewBox="0 0 88 90"><polygon points="44,5 83,30 83,75 5,75 5,30" fill="#FFCC00" stroke="black" stroke-width="2"/><text x="44" y="42" text-anchor="middle" fill="black" font-family="Arial,sans-serif" font-size="9" font-weight="bold">SCHOOL</text><text x="44" y="56" text-anchor="middle" fill="black" font-family="Arial,sans-serif" font-size="8">CROSSING</text></svg>`,
-  railroad:`<svg width="88" height="88" viewBox="0 0 88 88"><polygon points="44,8 80,72 8,72" fill="#FFCC00" stroke="black" stroke-width="2.5"/><line x1="30" y1="28" x2="58" y2="66" stroke="black" stroke-width="4"/><line x1="58" y1="28" x2="30" y2="66" stroke="black" stroke-width="4"/><text x="44" y="62" text-anchor="middle" fill="black" font-family="Arial Black,sans-serif" font-size="11" font-weight="900">RR</text></svg>`
+  // Yellow diamond shape (was a triangle); hidden on Q10 where text would give away the answer
+  slippery:`<svg width="88" height="88" viewBox="0 0 88 88"><polygon points="44,5 83,44 44,83 5,44" fill="#FFCC00" stroke="black" stroke-width="2.5"/><text x="44" y="38" text-anchor="middle" fill="black" font-family="Arial,sans-serif" font-size="9" font-weight="bold">SLIPPERY</text><text x="44" y="50" text-anchor="middle" fill="black" font-family="Arial,sans-serif" font-size="9" font-weight="bold">WHEN</text><text x="44" y="62" text-anchor="middle" fill="black" font-family="Arial,sans-serif" font-size="9" font-weight="bold">WET</text></svg>`,
+  // Yellow pentagon (5-sided) — correct shape for school zone signs
+  school:`<svg width="88" height="90" viewBox="0 0 88 90"><polygon points="44,5 83,30 83,75 5,75 5,30" fill="#FFCC00" stroke="black" stroke-width="2"/><text x="44" y="46" text-anchor="middle" fill="black" font-family="Arial,sans-serif" font-size="9" font-weight="bold">SCHOOL</text><text x="44" y="58" text-anchor="middle" fill="black" font-family="Arial,sans-serif" font-size="8">CROSSING</text></svg>`,
+  // Yellow diamond; X arms drawn first, yellow rect patches center so RR text reads clearly on top
+  railroad:`<svg width="88" height="88" viewBox="0 0 88 88"><polygon points="44,5 83,44 44,83 5,44" fill="#FFCC00" stroke="black" stroke-width="2.5"/><line x1="22" y1="22" x2="66" y2="66" stroke="black" stroke-width="5"/><line x1="66" y1="22" x2="22" y2="66" stroke="black" stroke-width="5"/><rect x="27" y="32" width="34" height="24" fill="#FFCC00"/><text x="44" y="48" text-anchor="middle" fill="black" font-family="Arial Black,sans-serif" font-size="15" font-weight="900">RR</text></svg>`
 };
 
 /* ── Chapter Data (The On-Ramp) ── */
@@ -1798,7 +1806,7 @@ function timeUpAnswer() {
   // Disable buttons and reveal correct
   const btns = document.querySelectorAll('.ans-btn');
   btns.forEach(b => b.setAttribute('disabled', true));
-  btns[q.ans].classList.add('s-reveal');
+  btns[state._mappedAns].classList.add('s-reveal');
 
   document.getElementById('chip-w').textContent = state.wrong;
   const fb = document.getElementById('feedback');
@@ -1878,9 +1886,9 @@ function renderQuestion() {
   document.getElementById('chip-r').textContent    = state.numQ - state.idx;
   document.getElementById('g-prog').style.width    = Math.round(((num - 1) / state.numQ) * 100) + '%';
 
-  // Sign display
+  // Sign display — hideSign:true suppresses the visual on questions where it gives away the answer
   const signEl = document.getElementById('sign-display');
-  if (q.sign && SIGNS[q.sign]) {
+  if (q.sign && SIGNS[q.sign] && !q.hideSign) {
     signEl.innerHTML = SIGNS[q.sign];
     signEl.classList.remove('hide');
   } else {
@@ -1890,11 +1898,13 @@ function renderQuestion() {
 
   document.getElementById('q-text').textContent = q.q;
 
-  // Build answer buttons
-  const list    = document.getElementById('answers-list');
-  const letters = ['A', 'B', 'C'];
+  // Build answer buttons — shuffle options each time so the correct answer isn't always the same letter
+  const list         = document.getElementById('answers-list');
+  const letters      = ['A', 'B', 'C'];
+  const shuffledOpts = shuffle(q.opts.slice());
+  state._mappedAns   = shuffledOpts.indexOf(q.opts[q.ans]);
   list.innerHTML = '';
-  q.opts.forEach((opt, i) => {
+  shuffledOpts.forEach((opt, i) => {
     const btn = document.createElement('button');
     btn.className = 'ans-btn';
     btn.innerHTML = `<span class="ans-ltr">${letters[i]}</span><span>${opt}</span>`;
@@ -1922,13 +1932,13 @@ function handleAnswer(chosen, q) {
   // Stop Sign Blitz timer
   if (state.mode === 'signblitz') clearInterval(state._timer);
 
-  const correct = (chosen === q.ans);
+  const correct = (chosen === state._mappedAns);
   const btns    = document.querySelectorAll('.ans-btn');
   const letters = ['A', 'B', 'C'];
 
   btns.forEach(b => b.setAttribute('disabled', true));
   btns[chosen].classList.add(correct ? 's-correct' : 's-wrong');
-  if (!correct) btns[q.ans].classList.add('s-reveal');
+  if (!correct) btns[state._mappedAns].classList.add('s-reveal');
 
   let bonusXP = 0;
 
