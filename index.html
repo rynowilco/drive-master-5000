@@ -576,6 +576,25 @@ body{
 .btn-rearview:hover{border-color:var(--gold);background:linear-gradient(135deg,rgba(179,153,93,.28),rgba(179,153,93,.12))}
 .btn-rearview:active{transform:scale(0.98)}
 
+/* ── Rearview results extras (v3) ── */
+.btn-back-chapter{
+  width:100%;background:linear-gradient(135deg,rgba(14,165,233,.18),rgba(14,165,233,.08));
+  border:1px solid rgba(14,165,233,.4);border-radius:var(--r);
+  padding:14px;color:#7DD3FC;font-family:'Bebas Neue',sans-serif;font-size:19px;
+  letter-spacing:2.5px;cursor:pointer;
+  transition:transform .12s,border-color .15s,background .15s;
+}
+.btn-back-chapter:hover{border-color:var(--teal);background:linear-gradient(135deg,rgba(14,165,233,.28),rgba(14,165,233,.12))}
+.btn-back-chapter:active{transform:scale(0.98)}
+
+.r-review-nudge{
+  width:100%;border-radius:var(--r);padding:13px 16px;margin-bottom:12px;
+  background:rgba(14,165,233,.08);border:1px solid rgba(14,165,233,.3);
+  text-align:center;animation:slideUp .4s .35s ease both;
+}
+.r-review-nudge-title{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:#7DD3FC;margin-bottom:3px}
+.r-review-nudge-body{font-size:12px;color:var(--dim);line-height:1.45}
+
 /* ── TOAST NOTIFICATION ── */
 #toast{
   position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);
@@ -766,8 +785,13 @@ body{
       <div class="r-xp-lbl">Experience Earned</div>
     </div>
     <div class="r-actions">
-      <button class="btn-primary"   id="r-play-again" onclick="playAgain()">PLAY AGAIN</button>
-      <button class="btn-secondary" onclick="goHome()">HOME BASE</button>
+      <div class="r-review-nudge hide" id="r-review-nudge">
+        <div class="r-review-nudge-title">📖 Want to review first?</div>
+        <div class="r-review-nudge-body">Re-read the chapter, then come back and retake the quiz.</div>
+      </div>
+      <button class="btn-primary"     id="r-play-again"       onclick="playAgain()">PLAY AGAIN</button>
+      <button class="btn-back-chapter hide" id="r-back-to-chapter" onclick="backToChapter()">← BACK TO CHAPTER</button>
+      <button class="btn-secondary"   onclick="goHome()">HOME BASE</button>
     </div>
   </div>
 </div>
@@ -2140,12 +2164,24 @@ function showResults() {
 
   document.getElementById('r-xp').textContent = '+' + xpEarned + ' XP';
 
-  // Rearview mode: relabel the results action buttons
-  const playAgainBtn = document.getElementById('r-play-again');
+  // Rearview mode: relabel play-again, show Back to Chapter, conditionally show review nudge
+  const playAgainBtn     = document.getElementById('r-play-again');
+  const backChapterBtn   = document.getElementById('r-back-to-chapter');
+  const reviewNudge      = document.getElementById('r-review-nudge');
+
   if (state.mode === 'rearview') {
     playAgainBtn.textContent = 'RETAKE QUIZ';
+    backChapterBtn.classList.remove('hide');
+    // Show the review nudge only when Tyler scores below 60%
+    if (pct < 60) {
+      reviewNudge.classList.remove('hide');
+    } else {
+      reviewNudge.classList.add('hide');
+    }
   } else {
     playAgainBtn.textContent = 'PLAY AGAIN';
+    backChapterBtn.classList.add('hide');
+    reviewNudge.classList.add('hide');
   }
 
   showScreen('results');
@@ -2165,6 +2201,13 @@ function playAgain() {
   } else {
     startMode(state.mode);
   }
+}
+
+/* ════════════════════════════════════════
+   BACK TO CHAPTER  (Rearview results → chapter viewer)
+════════════════════════════════════════ */
+function backToChapter() {
+  openChapter(state._chapterId);
 }
 
 /* ════════════════════════════════════════
