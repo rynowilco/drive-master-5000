@@ -576,6 +576,17 @@ body{
 .btn-rearview:hover{border-color:var(--gold);background:linear-gradient(135deg,rgba(179,153,93,.28),rgba(179,153,93,.12))}
 .btn-rearview:active{transform:scale(0.98)}
 
+/* ── Sound toggle (v3) ── */
+.home-hdr-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.btn-sound-toggle{
+  background:var(--surf);border:1px solid var(--border);border-radius:var(--rsm);
+  width:36px;height:36px;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:18px;line-height:1;
+  transition:background .12s,border-color .12s;
+  -webkit-tap-highlight-color:transparent;
+}
+.btn-sound-toggle:active{background:var(--surf3)}
+
 /* ── Rearview results extras (v3) ── */
 .btn-back-chapter{
   width:100%;background:linear-gradient(135deg,rgba(14,165,233,.18),rgba(14,165,233,.08));
@@ -617,9 +628,12 @@ body{
       <span class="logo-main">DRIVE<br>MASTER<br>5000</span>
       <span class="logo-tag">Oregon Permit Prep</span>
     </div>
-    <div class="player-card">
-      <div class="player-level" id="h-level">LVL 1</div>
-      <div class="player-rank"  id="h-rank">Learner's<br>Permit</div>
+    <div class="home-hdr-right">
+      <div class="player-card">
+        <div class="player-level" id="h-level">LVL 1</div>
+        <div class="player-rank"  id="h-rank">Learner's<br>Permit</div>
+      </div>
+      <button class="btn-sound-toggle" id="btn-sound-toggle" onclick="toggleSound()" aria-label="Toggle sound">🔊</button>
     </div>
   </div>
 
@@ -1307,7 +1321,8 @@ let state = {
   totalAnswered: 0,
   weakIds:       [],
   sessions:      0,    // total sessions played
-  chaptersRead:  []    // v2: array of chapter indices (0–8) read at least once
+  chaptersRead:  [],   // v2: array of chapter indices (0–8) read at least once
+  soundOn:       true  // v3: sound effects preference
 };
 
 /* ════════════════════════════════════════
@@ -1323,7 +1338,8 @@ function saveProgress() {
     totalAnswered: state.totalAnswered,
     weakIds:       state.weakIds,
     sessions:      state.sessions,
-    chaptersRead:  state.chaptersRead
+    chaptersRead:  state.chaptersRead,
+    soundOn:       state.soundOn
   };
   try {
     localStorage.setItem(SAVE_KEY, JSON.stringify(save));
@@ -1345,6 +1361,7 @@ function loadProgress() {
     state.weakIds       = Array.isArray(save.weakIds)                                         ? save.weakIds       : [];
     state.sessions      = (typeof save.sessions === 'number'       && save.sessions >= 0)     ? save.sessions      : 0;
     state.chaptersRead  = Array.isArray(save.chaptersRead)                                    ? save.chaptersRead  : [];
+    state.soundOn       = (save.soundOn === false)                                            ? false              : true;
   } catch (e) {
     // Corrupted save — start fresh
   }
@@ -1354,7 +1371,7 @@ function resetProgress() {
   try { localStorage.removeItem(SAVE_KEY); } catch(e) {}
   state.xp = 0; state.bestStreak = 0; state.totalRight = 0;
   state.totalAnswered = 0; state.weakIds = []; state.sessions = 0;
-  state.chaptersRead = [];
+  state.chaptersRead = []; state.soundOn = true;
   updateHomeXP();
   showToast('🔄 Progress reset — starting fresh!');
 }
@@ -1399,6 +1416,22 @@ function updateHomeXP() {
     ? Math.round((state.totalRight / state.totalAnswered) * 100) + '%'
     : '—';
   document.getElementById('s-weak').textContent   = state.weakIds.length;
+  updateSoundBtn();
+}
+
+/* ════════════════════════════════════════
+   SOUND TOGGLE  (v3)
+════════════════════════════════════════ */
+function toggleSound() {
+  state.soundOn = !state.soundOn;
+  saveProgress();
+  updateSoundBtn();
+  showToast(state.soundOn ? '🔊 Sound on' : '🔇 Sound off');
+}
+
+function updateSoundBtn() {
+  const btn = document.getElementById('btn-sound-toggle');
+  if (btn) btn.textContent = state.soundOn ? '🔊' : '🔇';
 }
 
 /* ════════════════════════════════════════
@@ -1440,8 +1473,9 @@ function checkLevelUp(oldXP, newXP, xpEarned, afterCallback) {
   const newLv = getLevel(newXP);
 
   if (newLv > oldLv) {
-    // Fire confetti
+    // Fire confetti and fanfare
     spawnConfetti();
+    SoundEngine.levelUp();
     // Populate overlay
     document.getElementById('lv-num').textContent   = newLv;
     document.getElementById('lv-rank').textContent  = (RANK_ICONS[newLv] || '') + ' ' + (RANKS[newLv] || '');
@@ -1674,6 +1708,78 @@ function shuffle(arr) {
 }
 
 /* ════════════════════════════════════════
+   SOUND ENGINE  (v3)
+   Pure Web Audio API — no files, no CDN.
+   All sounds generated from oscillator tones.
+   Every method is a no-op when soundOn is false
+   or when AudioContext is unavailable.
+════════════════════════════════════════ */
+const SoundEngine = (() => {
+  let ctx = null;
+
+  function getCtx() {
+    if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+    if (ctx.state === 'suspended') ctx.resume();
+    return ctx;
+  }
+
+  // Single oscillator tone: freq Hz, wave type, start time (s), duration (s), peak gain 0–1
+  function tone(freq, type, startTime, duration, gainPeak) {
+    const c    = getCtx();
+    const osc  = c.createOscillator();
+    const gain = c.createGain();
+    osc.connect(gain);
+    gain.connect(c.destination);
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, startTime);
+    gain.gain.setValueAtTime(0, startTime);
+    gain.gain.linearRampToValueAtTime(gainPeak, startTime + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+    osc.start(startTime);
+    osc.stop(startTime + duration + 0.05);
+  }
+
+  return {
+    // Short ascending two-note chime
+    correct() {
+      if (!state.soundOn) return;
+      try {
+        const c = getCtx(), t = c.currentTime;
+        tone(880,  'sine', t,        0.18, 0.28);
+        tone(1320, 'sine', t + 0.10, 0.15, 0.18);
+      } catch(e) {}
+    },
+    // Low sawtooth thud
+    wrong() {
+      if (!state.soundOn) return;
+      try {
+        const c = getCtx(), t = c.currentTime;
+        tone(160, 'sawtooth', t, 0.22, 0.22);
+      } catch(e) {}
+    },
+    // Three-note ascending fanfare: C5 → E5 → G5
+    levelUp() {
+      if (!state.soundOn) return;
+      try {
+        const c = getCtx(), t = c.currentTime;
+        tone(523, 'sine', t,        0.18, 0.30);
+        tone(659, 'sine', t + 0.14, 0.18, 0.30);
+        tone(784, 'sine', t + 0.28, 0.28, 0.40);
+      } catch(e) {}
+    },
+    // Two quick high blips — speed bonus
+    speedBonus() {
+      if (!state.soundOn) return;
+      try {
+        const c = getCtx(), t = c.currentTime;
+        tone(1200, 'sine', t,        0.08, 0.18);
+        tone(1600, 'sine', t + 0.07, 0.10, 0.18);
+      } catch(e) {}
+    }
+  };
+})();
+
+/* ════════════════════════════════════════
    HUD HELPERS — show/hide mode-specific UI
 ════════════════════════════════════════ */
 function resetHUDs() {
@@ -1831,6 +1937,7 @@ function timeUpAnswer() {
   const btns = document.querySelectorAll('.ans-btn');
   btns.forEach(b => b.setAttribute('disabled', true));
   btns[state._mappedAns].classList.add('s-reveal');
+  SoundEngine.wrong();
 
   document.getElementById('chip-w').textContent = state.wrong;
   const fb = document.getElementById('feedback');
@@ -1849,6 +1956,7 @@ function flashSpeedBonus() {
   void el.offsetWidth; // reflow
   el.classList.add('pop');
   setTimeout(() => el.classList.remove('pop'), 750);
+  SoundEngine.speedBonus();
 }
 
 /* ════════════════════════════════════════
@@ -1971,6 +2079,7 @@ function handleAnswer(chosen, q) {
     state.streak++;
     state.maxStreak = Math.max(state.maxStreak, state.streak);
     state.totalRight++;
+    SoundEngine.correct();
 
     // Sign Blitz speed bonus
     if (state.mode === 'signblitz' && state._blitzTimeLeft >= BLITZ_BONUS_THRESHOLD) {
@@ -1986,6 +2095,7 @@ function handleAnswer(chosen, q) {
     state.wrong++;
     state.streak = 0;
     if (!state.weakIds.includes(q.id)) state.weakIds.push(q.id);
+    SoundEngine.wrong();
   }
   state.totalAnswered++;
 
@@ -2003,7 +2113,7 @@ function handleAnswer(chosen, q) {
     fb.innerHTML = `<div class="fb-title">✅ Correct!${bonus}</div>${q.exp}<div class="fb-ref">📖 ${q.ref}</div>`;
   } else {
     fb.className = 'feedback fb-no show';
-    fb.innerHTML = `<div class="fb-title">❌ Not quite — the answer was ${letters[q.ans]}</div>${q.exp}<div class="fb-ref">📖 ${q.ref}</div>`;
+    fb.innerHTML = `<div class="fb-title">❌ Not quite — the answer was ${letters[state._mappedAns]}</div>${q.exp}<div class="fb-ref">📖 ${q.ref}</div>`;
   }
 
   const nxt  = document.getElementById('btn-next');
